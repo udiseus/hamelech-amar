@@ -1,6 +1,5 @@
 import Parser from 'rss-parser'
 
-// Multiple Nitter instances as fallbacks — if one is down, try the next
 const NITTER_INSTANCES = [
   'https://nitter.privacydev.net',
   'https://nitter.poast.org',
@@ -8,7 +7,49 @@ const NITTER_INSTANCES = [
   'https://nitter.rawbit.ninja',
 ]
 
-const SEARCH_PHRASES = ['טראמפ אמר לי', 'Trump told me']
+// All phrases we track — English + Hebrew
+export const SEARCH_PHRASES = [
+  // Core English
+  'Trump told me',
+  'Trump told Axios',
+  'Trump told me in an interview',
+  // Direct attribution
+  'In a phone call with me',
+  'In an interview with me',
+  'Speaking to me',
+  'In comments to me',
+  // Reporting verbs
+  'Trump confirmed to me',
+  'Trump revealed',
+  'Trump acknowledged',
+  'Trump claimed',
+  'I asked Trump',
+  'According to Trump',
+  // Scoop prefixes (these appear at start of tweet)
+  'SCOOP: Trump told me',
+  'NEW: Trump says',
+  'Axios scoop: Trump told me',
+  // Core Hebrew
+  'טראמפ אמר לי',
+  'טראמפ אמר בשיחה איתי',
+  'בשיחה איתי אמר טראמפ',
+  'בראיון שהעניק לי',
+  'טראמפ אמר בראיון ל',
+  'טראמפ אמר לי כי',
+  'שוחחתי עם טראמפ',
+  'כששאלתי את טראמפ',
+  'טראמפ השיב לי',
+  'טראמפ טען בפניי',
+  'טראמפ הבהיר לי',
+  'טראמפ אישר לי',
+  'טראמפ אמר בשיחה',
+  'לדברי טראמפ בשיחה איתי',
+  'גורם שמעורה בפרטי השיחה',
+  'מקור שמעורה בפרטי השיחה',
+  'לפי מקור שמעורה בפרטים',
+  'טראמפ אמר לאקסיוס',
+  'טראמפ אמר לי בראיון',
+]
 
 export type RawTweet = {
   tweet_id: string
@@ -23,17 +64,9 @@ function extractTweetId(url: string): string | null {
   return match ? match[1] : null
 }
 
-function toOfficialUrl(nitterUrl: string): string {
-  // Convert nitter URL to official x.com URL
-  return nitterUrl
-    .replace(/https:\/\/[^/]+\//, 'https://x.com/')
-    .replace('/x.com/status/', '/x.com/BarakRavid/status/')
-}
-
 async function fetchFromInstance(instance: string): Promise<RawTweet[]> {
   const parser = new Parser({ timeout: 8000 })
   const feedUrl = `${instance}/BarakRavid/rss`
-
   const feed = await parser.parseURL(feedUrl)
   const results: RawTweet[] = []
 
@@ -58,7 +91,6 @@ async function fetchFromInstance(instance: string): Promise<RawTweet[]> {
       matched_phrase: matchedPhrase,
     })
   }
-
   return results
 }
 
@@ -66,13 +98,12 @@ export async function fetchNewTweets(): Promise<RawTweet[]> {
   for (const instance of NITTER_INSTANCES) {
     try {
       const tweets = await fetchFromInstance(instance)
-      console.log(`[rss] fetched ${tweets.length} matched tweets from ${instance}`)
+      console.log(`[rss] ${tweets.length} matched from ${instance}`)
       return tweets
     } catch (err) {
-      console.warn(`[rss] instance ${instance} failed:`, (err as Error).message)
+      console.warn(`[rss] ${instance} failed:`, (err as Error).message)
     }
   }
-
   console.error('[rss] all Nitter instances failed')
   return []
 }

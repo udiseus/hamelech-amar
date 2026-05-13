@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { getSupabase } from '@/lib/supabase'
 import Counter from '@/components/Counter'
+import DaysSince from '@/components/DaysSince'
 import LastTweet from '@/components/LastTweet'
 import SubscribeBox from '@/components/SubscribeBox'
 import Timeline from '@/components/Timeline'
@@ -91,6 +92,12 @@ export default async function HomePage({
 
         {/* Counter */}
         <Counter count={totalCount} updatedAt={updatedAt} />
+
+        {/* Days since last mention */}
+        <DaysSince
+          latestTweetDate={latestTweet?.created_at ?? null}
+          totalCount={totalCount}
+        />
 
         {/* Last tweet */}
         <LastTweet tweet={latestTweet} />

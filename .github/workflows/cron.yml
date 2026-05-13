@@ -1,0 +1,30 @@
+name: Scan Barak Ravid tweets
+
+on:
+  schedule:
+    # Every 15 minutes (GitHub Actions minimum interval)
+    - cron: '*/15 * * * *'
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call cron endpoint
+        run: |
+          response=$(curl -s -w "\n%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            https://hamelech-amar.vercel.app/api/cron)
+
+          body=$(echo "$response" | head -n -1)
+          status=$(echo "$response" | tail -n 1)
+
+          echo "Status: $status"
+          echo "Response: $body"
+
+          if [ "$status" != "200" ]; then
+            echo "❌ Cron failed with status $status"
+            exit 1
+          fi
+
+          echo "✅ Cron completed successfully"

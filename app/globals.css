@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-deep: #0d0120;
+  --bg-card: #1a0533;
+  --bg-card2: #2d1054;
+  --purple-bright: #7c3aed;
+  --purple-light: #9b7fd4;
+  --purple-pale: #c4b5fd;
+  --gold: #e2c97e;
+  --gold-dim: #b89a4e;
+  --text-main: #f3e8ff;
+  --text-muted: #a78bca;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  direction: rtl;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--purple-bright); border-radius: 3px; }
+
+/* Selection */
+::selection { background: var(--purple-bright); color: white; }
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-purple-800/40 p-6;
+    background: var(--bg-card);
+  }
+
+  .card2 {
+    @apply rounded-xl border border-purple-700/30 p-4;
+    background: var(--bg-card2);
+  }
+
+  .gold-text {
+    color: var(--gold);
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 rounded-xl font-bold text-base transition-all duration-200;
+    background: var(--gold);
+    color: var(--bg-deep);
+  }
+
+  .btn-primary:hover {
+    background: var(--gold-dim);
+    @apply scale-105;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 rounded-lg text-sm transition-all duration-200;
+    background: var(--purple-bright);
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    @apply opacity-80;
+  }
+}
+
+@keyframes count-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.count-pop {
+  animation: count-pop 0.4s ease-out;
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+/* Stars background effect */
+.stars-bg {
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(226, 201, 126, 0.08) 0%, transparent 40%);
+}

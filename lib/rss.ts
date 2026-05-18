@@ -1,10 +1,14 @@
 import Parser from 'rss-parser'
 
 const NITTER_INSTANCES = [
-  'https://nitter.privacydev.net',
   'https://nitter.poast.org',
+  'https://nitter.privacydev.net',
   'https://nitter.1d4.us',
   'https://nitter.rawbit.ninja',
+  'https://lightsky.fun',
+  'https://nitter.cz',
+  'https://nitter.it',
+  'https://nitter.lucahammer.com',
 ]
 
 // All phrases we track — English + Hebrew
@@ -94,16 +98,22 @@ async function fetchFromInstance(instance: string): Promise<RawTweet[]> {
   return results
 }
 
-export async function fetchNewTweets(): Promise<RawTweet[]> {
+export type FetchResult = {
+  tweets: RawTweet[]
+  source: string | null
+  error: string | null
+}
+
+export async function fetchNewTweets(): Promise<FetchResult> {
   for (const instance of NITTER_INSTANCES) {
     try {
       const tweets = await fetchFromInstance(instance)
       console.log(`[rss] ${tweets.length} matched from ${instance}`)
-      return tweets
+      return { tweets, source: instance, error: null }
     } catch (err) {
       console.warn(`[rss] ${instance} failed:`, (err as Error).message)
     }
   }
   console.error('[rss] all Nitter instances failed')
-  return []
+  return { tweets: [], source: null, error: 'all Nitter instances failed' }
 }

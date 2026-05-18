@@ -1,6 +1,8 @@
 import { Resend } from 'resend'
 import type { MatchedTweet } from './supabase'
 
+const ADMIN_EMAIL = 'udi.jonas@gmail.com'
+
 function getResend() {
   return new Resend(process.env.RESEND_API_KEY!)
 }
@@ -11,6 +13,30 @@ function getFrom() {
 
 function getAppUrl() {
   return process.env.NEXT_PUBLIC_APP_URL!
+}
+
+export async function sendAdminNewSubscriberNotification(subscriberEmail: string) {
+  await getResend().emails.send({
+    from: getFrom(),
+    to: ADMIN_EMAIL,
+    subject: `נרשם חדש — ${subscriberEmail}`,
+    html: `<div dir="rtl" style="font-family: Arial, sans-serif;">
+      <p>נרשם חדש לאתר המלך אמר:</p>
+      <p><strong>${subscriberEmail}</strong></p>
+    </div>`,
+  })
+}
+
+export async function sendNitterFailureAlert() {
+  await getResend().emails.send({
+    from: getFrom(),
+    to: ADMIN_EMAIL,
+    subject: '⚠️ המלך אמר — כל Nitter instances נכשלו',
+    html: `<div dir="rtl" style="font-family: Arial, sans-serif;">
+      <p>ה-cron רץ אבל כל 8 ה-Nitter instances נכשלו.</p>
+      <p>ייתכן שציוץ חדש של רביד פוספס. בדוק ידנית.</p>
+    </div>`,
+  })
 }
 
 export async function sendConfirmationEmail(email: string, token: string) {

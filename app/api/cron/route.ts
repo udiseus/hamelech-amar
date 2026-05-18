@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { fetchNewTweets } from '@/lib/rss'
-import { sendNewTweetNotification } from '@/lib/email'
+import { sendNewTweetNotification, sendNitterFailureAlert } from '@/lib/email'
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization')
@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
     const { tweets: candidates, source, error: fetchError } = await fetchNewTweets()
 
     if (fetchError) {
+      sendNitterFailureAlert().catch(() => {})
       return NextResponse.json({ message: 'Nitter fetch failed', error: fetchError, checked_at: new Date().toISOString() }, { status: 503 })
     }
 

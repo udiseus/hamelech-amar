@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
-import { sendConfirmationEmail, sendAdminNewSubscriberNotification } from '@/lib/email'
+import { sendConfirmationEmail } from '@/lib/email'
 import { randomBytes } from 'crypto'
 
 export async function POST(req: NextRequest) {
@@ -45,7 +45,6 @@ export async function POST(req: NextRequest) {
   }
 
   await sendConfirmationEmail(normalizedEmail, token)
-  sendAdminNewSubscriberNotification(normalizedEmail).catch(() => {})
 
   return NextResponse.json({ message: 'שלחנו מייל אישור. בדקו את תיבת הדואר.' })
 }

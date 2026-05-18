@@ -98,22 +98,16 @@ async function fetchFromInstance(instance: string): Promise<RawTweet[]> {
   return results
 }
 
-export type FetchResult = {
-  tweets: RawTweet[]
-  source: string | null
-  error: string | null
-}
-
-export async function fetchNewTweets(): Promise<FetchResult> {
+export async function fetchNewTweets(): Promise<RawTweet[]> {
   for (const instance of NITTER_INSTANCES) {
     try {
       const tweets = await fetchFromInstance(instance)
       console.log(`[rss] ${tweets.length} matched from ${instance}`)
-      return { tweets, source: instance, error: null }
+      return tweets
     } catch (err) {
       console.warn(`[rss] ${instance} failed:`, (err as Error).message)
     }
   }
   console.error('[rss] all Nitter instances failed')
-  return { tweets: [], source: null, error: 'all Nitter instances failed' }
+  return []
 }

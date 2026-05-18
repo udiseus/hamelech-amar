@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { fetchNewTweets } from '@/lib/rss'
-import { sendNewTweetNotification, sendNitterFailureAlert } from '@/lib/email'
+import { sendNewTweetNotification } from '@/lib/email'
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization')
@@ -21,15 +21,10 @@ export async function GET(req: NextRequest) {
 
     let currentCount = latestSaved?.count_number ?? 0
 
-    const { tweets: candidates, source, error: fetchError } = await fetchNewTweets()
-
-    if (fetchError) {
-      sendNitterFailureAlert().catch(() => {})
-      return NextResponse.json({ message: 'Nitter fetch failed', error: fetchError, checked_at: new Date().toISOString() }, { status: 503 })
-    }
+    const candidates = await fetchNewTweets()
 
     if (candidates.length === 0) {
-      return NextResponse.json({ message: 'No matched tweets in feed', source, checked_at: new Date().toISOString() })
+      return NextResponse.json({ message: 'No matched tweets in feed', checked_at: new Date().toISOString() })
     }
 
     candidates.sort(
@@ -90,7 +85,6 @@ export async function GET(req: NextRequest) {
       inserted: inserted.length,
       new_count: currentCount,
       notified: emails.length,
-      source,
     })
   } catch (err) {
     console.error('Cron error:', err)

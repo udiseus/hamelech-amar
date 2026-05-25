@@ -32,7 +32,7 @@ function getGmailFrom() {
   return `"המלך אמר" <${process.env.GMAIL_USER}>`
 }
 
-async function sendEmail(to: string, subject: string, html: string) {
+apync function sendEmail(to: string, subject: string, html: string) {
   if (useGmail()) {
     const transporter = getGmailTransporter()
     const info = await transporter.sendMail({

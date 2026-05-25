@@ -59,10 +59,10 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          background: '#0d1a2e',
+          background: 'linear-gradient(180deg, #0a1628 0%, #0d2a55 25%, #1a5fa8 55%, #1e7ec0 75%, #2496e0 100%)',
         }}
       >
-        {/* Sky video background */}
+        {/* Sky video background (loads when available) */}
         <video
           autoPlay
           muted
@@ -76,19 +76,19 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
         >
           <source src="/sky.mp4" type="video/mp4" />
         </video>
-        {/* Fallback / dark overlay so text stays readable */}
+        {/* Gradient overlay — doubles as CSS sky fallback when video is absent */}
         <div style={{
           position: 'absolute', inset: 0, zIndex: 1,
-          background: 'linear-gradient(180deg, rgba(11,31,58,0.52) 0%, rgba(14,50,100,0.30) 35%, rgba(26,95,168,0.10) 65%, transparent 100%)',
+          background: 'linear-gradient(180deg, rgba(8,20,45,0.60) 0%, rgba(14,50,100,0.35) 35%, rgba(26,95,168,0.12) 65%, transparent 100%)',
         }} />
         {/* Sun glow */}
-        <div style={{ position:'absolute', top:'12%', right:'18%', width:'160px', height:'160px', borderRadius:'50%', background:'radial-gradient(circle, rgba(255,220,100,0.22) 0%, transparent 70%)', zIndex:2, filter:'blur(8px)' }} />
+        <div style={{ position:'absolute', top:'12%', right:'18%', width:'160px', height:'160px', borderRadius:'}0%', background:'radial-gradient(circle, rgba(255,220,100,0.22) 0%, transparent 70%)', zIndex:2, filter:'blur(8px)' }} />
 
         {/* Cloud blobs */}
-        <div className="cloud-a" style={{ position:'absolute', top:'50%', left:'-6%',  width:'46%', height:'15%', background:'white', borderRadius:'50%', opacity:0.13, filter:'blur(22px)', zIndex:3 }} />
-        <div className="cloud-b" style={{ position:'absolute', top:'54%', right:'-4%', width:'42%', height:'13%', background:'white', borderRadius:'50%', opacity:0.11, filter:'blur(20px)', zIndex:3 }} />
-        <div className="cloud-c" style={{ position:'absolute', top:'63%', left:'6%',   width:'36%', height:'11%', background:'white', borderRadius:'50%', opacity:0.16, filter:'blur(16px)', zIndex:3 }} />
-        <div className="cloud-a" style={{ position:'absolute', top:'67%', right:'5%',  width:'32%', height:'10%', background:'white', borderRadius:'50%', opacity:0.13, filter:'blur(14px)', zIndex:3 }} />
+        <div className="cloud-a" style={{ position:'absolute', top:'50%', left:'-6%',  width:'46%', height:'15%', background:'white', borderRadius:'}0%', opacity:0.13, filter:'blur(22px)', zIndex:3 }} />
+        <div className="cloud-b" style={{ position:'absolute', top:'54%', right:'-4%', width:'42%', height:'13%', background:'white', borderRadius:'}0%', opacity:0.11, filter:'blur(20px)', zIndex:3 }} />
+        <div className="cloud-c" style={{ position:'absolute', top:'63%', left:'6%',   width:'36%', height:'11%', background:'white', borderRadius:'}0%', opacity:0.16, filter:'blur(16px)', zIndex:3 }} />
+        <div className="cloud-a" style={{ position:'absolute', top:'67%', right:'5%',  width:'32%', height:'10%', background:'white', borderRadius:'}0%', opacity:0.13, filter:'blur(14px)', zIndex:3 }} />
 
         {/* Illustration — PNG with transparent background, no blend mode needed */}
         <div style={{ position: 'relative', width: '100%', zIndex: 4 }}>
@@ -187,7 +187,7 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
         {/* Counter */}
         <Counter count={totalCount} updatedAt="עכשיו" color={moodColor} />
 
-        {/* Share */|
+        {/* Share */}
         <ShareButtons count={totalCount} />
 
         {/* Days since */}

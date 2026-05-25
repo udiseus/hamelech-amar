@@ -3,21 +3,20 @@
 @tailwind utilities;
 
 :root {
-  --bg-deep: #0d0120;
-  --bg-card: #1a0533;
-  --bg-card2: #2d1054;
-  --purple-bright: #7c3aed;
-  --purple-light: #9b7fd4;
-  --purple-pale: #c4b5fd;
-  --gold: #e2c97e;
-  --gold-dim: #b89a4e;
-  --text-main: #f3e8ff;
-  --text-muted: #a78bca;
+  --bg-deep:    #d4eaf9;
+  --bg-mid:     #e8f4fd;
+  --bg-card:    rgba(255,255,255,0.82);
+  --bg-card2:   rgba(210,235,255,0.75);
+  --border:     rgba(100,160,220,0.25);
+  --gold:       #b08010;
+  --gold-dim:   #8a620e;
+  --text-main:  #0e1e36;
+  --text-muted: #3a5878;
+  --accent:     #1e6aa8;
+  --accent-light: #4a9ad4;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 html {
   direction: rtl;
@@ -25,80 +24,118 @@ html {
 }
 
 body {
-  background-color: var(--bg-deep);
+  background: linear-gradient(180deg, #b8dcf5 0%, #cfe9fb 18%, #dff1fd 40%, #eaf6ff 70%, #f0f8ff 100%);
+  background-attachment: fixed;
   color: var(--text-main);
-  font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
+  font-family: 'Heebo',
+ 'Segoe UI', Arial, sans-serif;
+  font-weight: 400;
   min-height: 100vh;
   line-height: 1.6;
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-deep); }
-::-webkit-scrollbar-thumb { background: var(--purple-bright); border-radius: 3px; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #cce3f5; }
+::-webkit-scrollbar-thumb { background: var(--accent-light); border-radius: 3px; }
 
 /* Selection */
-::selection { background: var(--purple-bright); color: white; }
+::selection { background: var(--accent); color: white; }
+
+/* ─── Typography ─── */
+.font-title {
+  font-family: 'Frank Ruhl Libre', serif;
+}
 
 @layer components {
   .card {
-    @apply rounded-2xl border border-purple-800/40 p-6;
+    @apply rounded-2xl p-6;
     background: var(--bg-card);
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 20px rgba(30,106,168,0.08);
+    backdrop-filter: blur(8px);
   }
 
   .card2 {
-    @apply rounded-xl border border-purple-700/30 p-4;
+    @apply rounded-xl p-4;
     background: var(--bg-card2);
+    border: 1px solid var(--border);
   }
 
-  .gold-text {
-    color: var(--gold);
-  }
+  .gold-text { color: var(--gold); }
 
   .btn-primary {
     @apply px-6 py-3 rounded-xl font-bold text-base transition-all duration-200;
-    background: var(--gold);
-    color: var(--bg-deep);
+    background: var(--accent);
+    color: white;
   }
-
   .btn-primary:hover {
-    background: var(--gold-dim);
+    background: #155d93;
     @apply scale-105;
   }
 
   .btn-secondary {
     @apply px-4 py-2 rounded-lg text-sm transition-all duration-200;
-    background: var(--purple-bright);
+    background: var(--accent-light);
     color: white;
   }
-
-  .btn-secondary:hover {
-    @apply opacity-80;
-  }
+  .btn-secondary:hover { @apply opacity-80; }
 }
 
+/* ─── Animations ─── */
 @keyframes count-pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.08); }
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.08); }
   100% { transform: scale(1); }
 }
-
-.count-pop {
-  animation: count-pop 0.4s ease-out;
-}
+.count-pop { animation: count-pop 0.4s ease-out; }
 
 @keyframes fade-in-up {
   from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up { animation: fade-in-up 0.5s ease-out forwards; }
+
+/* ─── Cloud drift animations ─── */
+@keyframes cloud-drift-a {
+  0%   { transform: translateX(0)     translateY(0); }
+  30%  { transform: translateX(-28px) translateY(-10px); }
+  60%  { transform: translateX(18px)  translateY(6px); }
+  100% { transform: translateX(0)     translateY(0); }
+}
+@keyframes cloud-drift-b {
+  0%   { transform: translateX(0)    translateY(0); }
+  40%  { transform: translateX(32px) translateY(8px); }
+  70%  { transform: translateX(-14px) translateY(-6px); }
+  100% { transform: translateX(0)    translateY(0); }
+}
+@keyframes cloud-drift-c {
+  0%   { transform: translateX(0)     translateY(0); }
+  50%  { transform: translateX(-22px) translateY(12px); }
+  100% { transform: translateX(0)     translateY(0); }
+}
+.cloud-a { animation: cloud-drift-a 18s ease-in-out infinite; }
+.cloud-b { animation: cloud-drift-b 24s ease-in-out infinite; }
+.cloud-c { animation: cloud-drift-c 20s ease-in-out infinite; }
+
+@keyframes sky-shift {
+  0%   { background-position: 50% 0%; }
+  100% { background-position: 50% 40%; }
 }
 
-.fade-in-up {
-  animation: fade-in-up 0.5s ease-out forwards;
+@keyframes bounce-down {
+  0%, 100% { transform: translateY(0);   opacity: 0.8; }
+  50%       { transform: translateY(7px); opacity: 1;   }
 }
 
-/* Stars background effect */
-.stars-bg {
-  background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(226, 201, 126, 0.08) 0%, transparent 40%);
+/* Frank Ruhl Libre shorthand */
+.font-title { font-family: 'Frank Ruhl Libre', serif; }
+
+/* Hero illustration – responsive sizing & vertical position */
+.hero-section { justify-content: center; }
+.hero-img { width: 90%; display: block; margin: 0 auto; height: auto; }
+
+@media (min-width: 768px) {
+  .hero-section { justify-content: flex-end; }
+  .hero-img { width: 28%; }
 }

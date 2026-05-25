@@ -28,7 +28,12 @@ export async function POST(req: NextRequest) {
       .from('subscribers')
       .update({ unsubscribed_at: null, confirmed: false, confirmation_token: token })
       .eq('email', normalizedEmail)
-    await sendConfirmationEmail(normalizedEmail, token)
+    try {
+      await sendConfirmationEmail(normalizedEmail, token)
+    } catch (e) {
+      console.error('[subscribe] email send failed:', e)
+      return NextResponse.json({ error: 'שגיאה בשליחת מייל. נסו שוב.' }, { status: 500 })
+    }
     return NextResponse.json({ message: 'שלחנו מייל אישור. בדקו את תיבת הדואר.' })
   }
 
@@ -44,7 +49,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'שגיאה בשמירת הנרשם. נסו שוב.' }, { status: 500 })
   }
 
-  await sendConfirmationEmail(normalizedEmail, token)
+  try {
+    await sendConfirmationEmail(normalizedEmail, token)
+  } catch (e) {
+    console.error('[subscribe] email send failed:', e)
+    return NextResponse.json({ error: 'שגיאה בשליחת מייל. נסו שוב.' }, { status: 500 })
+  }
 
   return NextResponse.json({ message: 'שלחנו מייל אישור. בדקו את תיבת הדואר.' })
 }

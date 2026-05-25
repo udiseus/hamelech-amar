@@ -1,24 +1,11 @@
 import { NextResponse } from 'next/server'
-import { sendConfirmationEmail } from '@/lib/email'
-import { randomBytes } from 'crypto'
 
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-};
-
-// Temporary test endpoint - DELETE after testing
-export async function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS });
-}
+const CORS = { 'Access-Control-Allow-Origin': '*' };
 
 export async function GET() {
-  const token = randomBytes(32).toString('hex')
-  try {
-    await sendConfirmationEmail('udi.jonas@gmail.com', token)
-    return NextResponse.json({ ok: true, message: 'Test email sent!' }, { headers: CORS })
-  } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : String(e)
-    return NextResponse.json({ ok: false, error: msg }, { status: 500, headers: CORS })
-  }
+  return NextResponse.json({
+    from: process.env.RESEND_FROM_EMAIL || 'NOT SET',
+    apiKey: process.env.RESEND_API_KEY ? process.env.RESEND_API_KEY.slice(0,8) + '...' : 'NOT SET',
+    appUrl: process.env.NEXT_PUBLIC_APP_URL || 'NOT SET',
+  }, { headers: CORS })
 }

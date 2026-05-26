@@ -4,9 +4,13 @@ import { fetchNewTweets } from '@/lib/rss'
 import { sendNewTweetNotification } from '@/lib/email'
 
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  // אם CRON_SECRET מוגדר — מאמתים את הבקשה; אם לא — פותחים לכולם (למצב פיתוח)
+  const cronSecret = process.env.CRON_SECRET
+  if (cronSecret) {
+    const authHeader = req.headers.get('authorization')
+    if (authHeader !== `Bearer ${cronSecret}`) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
   }
 
   const supabaseAdmin = getSupabaseAdmin()

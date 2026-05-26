@@ -71,9 +71,9 @@ export default function Timeline({ tweets }: Props) {
 
               {/* Tweet text — direction by content language */}
               <p
-                className="font-title"
                 dir={hebrew ? 'rtl' : 'ltr'}
                 style={{
+                  fontFamily: 'Heebo, sans-serif',
                   fontSize: 'clamp(14px, 2.8vw, 17px)',
                   fontWeight: 400,
                   lineHeight: 1.65,

@@ -30,10 +30,10 @@ function getResendFrom() {
 }
 
 function getGmailFrom() {
-  return `"×××× ×××¨" <${process.env.GMAIL_USER}>`
+  return `"ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨" <${process.env.GMAIL_USER}>`
 }
 
-apync function sendEmail(to: string, subject: string, html: string) {
+async function sendEmail(to: string, subject: string, html: string) {
   if (useGmail()) {
     const transporter = getGmailTransporter()
     const info = await transporter.sendMail({
@@ -63,19 +63,19 @@ export async function sendConfirmationEmail(email: string, token: string) {
 
   await sendEmail(
     email,
-    '××©×¨× ××ª ×××¨×©×× â ×××× ×××¨',
+    'ÃÂÃÂ©ÃÂ¨ÃÂ ÃÂÃÂª ÃÂÃÂÃÂ¨ÃÂ©ÃÂÃÂ Ã¢ÂÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨',
     `
       <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a0533; color: #e2c97e; padding: 40px; border-radius: 12px;">
-        <h1 style="color: #e2c97e; text-align: center; font-size: 28px;">ð ×××× ×××¨</h1>
-        <p style="font-size: 18px; text-align: center;">×××¢× ×¡××××ª×!</p>
-        <p style="font-size: 16px;">×××¦× ×¢× ×××¤×ª××¨ ××× ×××©×¨ ××ª ×××¨×©×× ××¢×××× ×× ×××××××:</p>
+        <h1 style="color: #e2c97e; text-align: center; font-size: 28px;">Ã°ÂÂÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨</h1>
+        <p style="font-size: 18px; text-align: center;">ÃÂÃÂÃÂ¢ÃÂ ÃÂ¡ÃÂÃÂÃÂÃÂªÃÂ!</p>
+        <p style="font-size: 16px;">ÃÂÃÂÃÂ¦ÃÂ ÃÂ¢ÃÂ ÃÂÃÂÃÂ¤ÃÂªÃÂÃÂ¨ ÃÂÃÂÃÂ ÃÂÃÂÃÂ©ÃÂ¨ ÃÂÃÂª ÃÂÃÂÃÂ¨ÃÂ©ÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ:</p>
         <div style="text-align: center; margin: 30px 0;">
           <a href="${confirmUrl}" style="background: #e2c97e; color: #1a0533; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-size: 18px; font-weight: bold;">
-            ××©×¨ ××¨×©××
+            ÃÂÃÂ©ÃÂ¨ ÃÂÃÂ¨ÃÂ©ÃÂÃÂ
           </a>
         </div>
         <p style="font-size: 13px; color: #9b7fd4; text-align: center;">
-          ×ª×§××× ×××× ×¨×§ ××©× ×¡×¤×¨ ×¦×××¥ ×××©. ×× × ×¦××§ â ×××× ×¢××©× ××ª ×× ××©×××× ×.
+          ÃÂªÃÂ§ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ ÃÂ¨ÃÂ§ ÃÂÃÂ©ÃÂ ÃÂ¡ÃÂ¤ÃÂ¨ ÃÂ¦ÃÂÃÂÃÂ¥ ÃÂÃÂÃÂ©. ÃÂÃÂ ÃÂ ÃÂ¦ÃÂÃÂ§ Ã¢ÂÂ ÃÂÃÂÃÂÃÂ ÃÂ¢ÃÂÃÂ©ÃÂ ÃÂÃÂª ÃÂÃÂ ÃÂÃÂ©ÃÂÃÂÃÂÃÂ ÃÂ.
         </p>
       </div>
     `
@@ -94,30 +94,30 @@ export async function sendNewTweetNotification(
 
   const makeHtml = (email: string) => `
     <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a0533; color: #e2c97e; padding: 40px; border-radius: 12px;">
-      <h1 style="color: #e2c97e; text-align: center; font-size: 28px;">ð ×××× ×××¨ ×©××</h1>
-      <p style="font-size: 20px; text-align: center;">××××¢× ××××¤× ×××××××:</p>
-      <p style="font-size: 18px; text-align: center; color: #c4b5fd;">××¨×§ ×¨××× ×××××.</p>
+      <h1 style="color: #e2c97e; text-align: center; font-size: 28px;">Ã°ÂÂÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨ ÃÂ©ÃÂÃÂ</h1>
+      <p style="font-size: 20px; text-align: center;">ÃÂÃÂÃÂÃÂ¢ÃÂ ÃÂÃÂÃÂÃÂ¤ÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ:</p>
+      <p style="font-size: 18px; text-align: center; color: #c4b5fd;">ÃÂÃÂ¨ÃÂ§ ÃÂ¨ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ.</p>
       <div style="background: #2d1054; border: 1px solid #7c3aed; border-radius: 8px; padding: 20px; margin: 24px 0;">
         <p style="font-size: 16px; margin: 0; line-height: 1.7;">"${tweetPreview}"</p>
       </div>
       <p style="font-size: 22px; text-align: center; color: #e2c97e;">
-        ××§××× ××¨ ×¢×× ×Ö¾<strong style="font-size: 36px;">${totalCount}</strong>
+        ÃÂÃÂ§ÃÂÃÂÃÂ ÃÂÃÂ¨ ÃÂ¢ÃÂÃÂ ÃÂÃÂ¾<strong style="font-size: 36px;">${totalCount}</strong>
       </p>
       <div style="text-align: center; margin: 30px 0;">
         <a href="${tweet.url}" style="background: #7c3aed; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 16px; margin: 0 8px; display: inline-block;">
-          ××¦×××¥ ×Ö¾X
+          ÃÂÃÂ¦ÃÂÃÂÃÂ¥ ÃÂÃÂ¾X
         </a>
         <a href="${appUrl}" style="background: #e2c97e; color: #1a0533; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 16px; font-weight: bold; margin: 0 8px; display: inline-block;">
-          ××¢××× ×××× ×××¨
+          ÃÂÃÂ¢ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨
         </a>
       </div>
       <p style="font-size: 12px; color: #6b21a8; text-align: center; margin-top: 40px;">
-        ×× ×¨××¦×× ×××ª×¨ ×¢×××× ××? <a href="${appUrl}/api/unsubscribe?email=${encodeURIComponent(email)}" style="color: #9b7fd4;">××¡×¨ ××¨×©××</a>
+        ÃÂÃÂ ÃÂ¨ÃÂÃÂ¦ÃÂÃÂ ÃÂÃÂÃÂªÃÂ¨ ÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ? <a href="${appUrl}/api/unsubscribe?email=${encodeURIComponent(email)}" style="color: #9b7fd4;">ÃÂÃÂ¡ÃÂ¨ ÃÂÃÂ¨ÃÂ©ÃÂÃÂ</a>
       </p>
     </div>
   `
 
-  const subject = `×××× ×××¨ ×©×× â ×§××× ××¨: ${totalCount}`
+  const subject = `ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨ ÃÂ©ÃÂÃÂ Ã¢ÂÂ ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂ¨: ${totalCount}`
 
   if (useGmail()) {
     const transporter = getGmailTransporter()

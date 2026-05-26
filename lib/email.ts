@@ -64,8 +64,8 @@ export async function sendConfirmationEmail(email: string, token: string) {
   await sendEmail(
     email,
     'ÃÂÃÂ©ÃÂ¨ÃÂ ÃÂÃÂª ÃÂÃÂÃÂ¨ÃÂ©ÃÂÃÂ Ã¢ÂÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨',
-    `
-      <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a0533; color: #e2c97e; padding: 40px; border-radius: 12px;">
+    `<meta charset="utf-8">
+    <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a0533; color: #e2c97e; padding: 40px; border-radius: 12px;">
         <h1 style="color: #e2c97e; text-align: center; font-size: 28px;">Ã°ÂÂÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨</h1>
         <p style="font-size: 18px; text-align: center;">ÃÂÃÂÃÂ¢ÃÂ ÃÂ¡ÃÂÃÂÃÂÃÂªÃÂ!</p>
         <p style="font-size: 16px;">ÃÂÃÂÃÂ¦ÃÂ ÃÂ¢ÃÂ ÃÂÃÂÃÂ¤ÃÂªÃÂÃÂ¨ ÃÂÃÂÃÂ ÃÂÃÂÃÂ©ÃÂ¨ ÃÂÃÂª ÃÂÃÂÃÂ¨ÃÂ©ÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ:</p>
@@ -92,7 +92,7 @@ export async function sendNewTweetNotification(
   const appUrl = getAppUrl()
   const tweetPreview = tweet.text.length > 200 ? tweet.text.slice(0, 200) + '...' : tweet.text
 
-  const makeHtml = (email: string) => `
+  const makeHtml = (email: string) => `<meta charset="utf-8">
     <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a0533; color: #e2c97e; padding: 40px; border-radius: 12px;">
       <h1 style="color: #e2c97e; text-align: center; font-size: 28px;">Ã°ÂÂÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨ ÃÂ©ÃÂÃÂ</h1>
       <p style="font-size: 20px; text-align: center;">ÃÂÃÂÃÂÃÂ¢ÃÂ ÃÂÃÂÃÂÃÂ¤ÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ:</p>

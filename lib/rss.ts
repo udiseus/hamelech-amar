@@ -15,6 +15,7 @@ const NITTER_INSTANCES = [
 export const SEARCH_PHRASES = [
   // Core English
   'Trump told me',
+  'Trump tells me',
   'Trump told Axios',
   'Trump told me in an interview',
   // Direct attribution

@@ -1,5 +1,6 @@
 import { Resend } from 'resend'
-import nodemailer from 'nodemailer'
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const nodemailer = require('nodemailer') as typeof import('nodemailer')
 import type { MatchedTweet } from './supabase'
 
 function getAppUrl() {
@@ -29,7 +30,7 @@ function getResendFrom() {
 }
 
 function getGmailFrom() {
-  return `"המלך אמר" <${process.env.GMAIL_USER}>`
+  return `"×××× ×××¨" <${process.env.GMAIL_USER}>`
 }
 
 apync function sendEmail(to: string, subject: string, html: string) {
@@ -62,19 +63,19 @@ export async function sendConfirmationEmail(email: string, token: string) {
 
   await sendEmail(
     email,
-    'אשרו את ההרשמה — המלך אמר',
+    '××©×¨× ××ª ×××¨×©×× â ×××× ×××¨',
     `
       <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a0533; color: #e2c97e; padding: 40px; border-radius: 12px;">
-        <h1 style="color: #e2c97e; text-align: center; font-size: 28px;">👑 המלך אמר</h1>
-        <p style="font-size: 18px; text-align: center;">כמעט סיימתם!</p>
-        <p style="font-size: 16px;">לחצו על הכפתור כדי לאשר את ההרשמה לעדכונים מהממלכה:</p>
+        <h1 style="color: #e2c97e; text-align: center; font-size: 28px;">ð ×××× ×××¨</h1>
+        <p style="font-size: 18px; text-align: center;">×××¢× ×¡××××ª×!</p>
+        <p style="font-size: 16px;">×××¦× ×¢× ×××¤×ª××¨ ××× ×××©×¨ ××ª ×××¨×©×× ××¢×××× ×× ×××××××:</p>
         <div style="text-align: center; margin: 30px 0;">
           <a href="${confirmUrl}" style="background: #e2c97e; color: #1a0533; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-size: 18px; font-weight: bold;">
-            אשר הרשמה
+            ××©×¨ ××¨×©××
           </a>
         </div>
         <p style="font-size: 13px; color: #9b7fd4; text-align: center;">
-          תקבלו מייל רק כשנספר ציוץ חדש. לא נציק — המלך עושה את זה בשבילנו.
+          ×ª×§××× ×××× ×¨×§ ××©× ×¡×¤×¨ ×¦×××¥ ×××©. ×× × ×¦××§ â ×××× ×¢××©× ××ª ×× ××©×××× ×.
         </p>
       </div>
     `
@@ -93,30 +94,30 @@ export async function sendNewTweetNotification(
 
   const makeHtml = (email: string) => `
     <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a0533; color: #e2c97e; padding: 40px; border-radius: 12px;">
-      <h1 style="color: #e2c97e; text-align: center; font-size: 28px;">👑 המלך אמר שוב</h1>
-      <p style="font-size: 20px; text-align: center;">הודעה דחופה מהממלכה:</p>
-      <p style="font-size: 18px; text-align: center; color: #c4b5fd;">ברק רביד דיווח.</p>
+      <h1 style="color: #e2c97e; text-align: center; font-size: 28px;">ð ×××× ×××¨ ×©××</h1>
+      <p style="font-size: 20px; text-align: center;">××××¢× ××××¤× ×××××××:</p>
+      <p style="font-size: 18px; text-align: center; color: #c4b5fd;">××¨×§ ×¨××× ×××××.</p>
       <div style="background: #2d1054; border: 1px solid #7c3aed; border-radius: 8px; padding: 20px; margin: 24px 0;">
         <p style="font-size: 16px; margin: 0; line-height: 1.7;">"${tweetPreview}"</p>
       </div>
       <p style="font-size: 22px; text-align: center; color: #e2c97e;">
-        הקאונטר עלה ל־<strong style="font-size: 36px;">${totalCount}</strong>
+        ××§××× ××¨ ×¢×× ×Ö¾<strong style="font-size: 36px;">${totalCount}</strong>
       </p>
       <div style="text-align: center; margin: 30px 0;">
         <a href="${tweet.url}" style="background: #7c3aed; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 16px; margin: 0 8px; display: inline-block;">
-          לציוץ ב־X
+          ××¦×××¥ ×Ö¾X
         </a>
         <a href="${appUrl}" style="background: #e2c97e; color: #1a0533; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 16px; font-weight: bold; margin: 0 8px; display: inline-block;">
-          לעמוד המלך אמר
+          ××¢××× ×××× ×××¨
         </a>
       </div>
       <p style="font-size: 12px; color: #6b21a8; text-align: center; margin-top: 40px;">
-        לא רוצים יותר עדכונים? <a href="${appUrl}/api/unsubscribe?email=${encodeURIComponent(email)}" style="color: #9b7fd4;">הסר הרשמה</a>
+        ×× ×¨××¦×× ×××ª×¨ ×¢×××× ××? <a href="${appUrl}/api/unsubscribe?email=${encodeURIComponent(email)}" style="color: #9b7fd4;">××¡×¨ ××¨×©××</a>
       </p>
     </div>
   `
 
-  const subject = `המלך אמר שוב — קאונטר: ${totalCount}`
+  const subject = `×××× ×××¨ ×©×× â ×§××× ××¨: ${totalCount}`
 
   if (useGmail()) {
     const transporter = getGmailTransporter()

@@ -10,6 +10,8 @@ interface CounterProps {
 
 function formatUpdatedAt(iso: string): string {
   const d = new Date(iso)
+  // אם המחרוזת לא תאריך תקין (למשל "עכשיו") — מחזירים אותה כפי שהיא
+  if (isNaN(d.getTime())) return iso
   const now = new Date()
   const diffMs = now.getTime() - d.getTime()
   const diffMins = Math.floor(diffMs / 60000)

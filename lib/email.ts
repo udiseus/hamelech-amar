@@ -30,7 +30,9 @@ function getResendFrom() {
 }
 
 function getGmailFrom() {
-  return `"ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨" <${process.env.GMAIL_USER}>`
+  // RFC 2047 Base64 encoding — needed for Hebrew display names in all email clients
+  const b64 = Buffer.from('המלך אמר').toString('base64')
+  return `=?UTF-8?B?${b64}?= <${process.env.GMAIL_USER}>`
 }
 
 async function sendEmail(to: string, subject: string, html: string) {
@@ -41,6 +43,7 @@ async function sendEmail(to: string, subject: string, html: string) {
       to,
       subject,
       html,
+      encoding: 'base64', // force base64 transfer encoding — ensures Hebrew/emoji render correctly in all clients
     })
     console.log('[Gmail] Sent OK, messageId:', info.messageId)
   } else {

@@ -82,6 +82,20 @@ export async function sendConfirmationEmail(email: string, token: string) {
   )
 }
 
+// שולח התראה לבעל האתר כשנרשם מנוי חדש — נפרד לחלוטין מזרימת ההרשמה הרגילה
+export async function sendOwnerNotification(subscriberEmail: string) {
+  const ownerEmail = process.env.GMAIL_USER ?? 'udi.jonas@gmail.com'
+  await sendEmail(
+    ownerEmail,
+    `נרשם חדש 🎉 — ${subscriberEmail}`,
+    `<meta charset="utf-8">
+     <div dir="rtl" style="font-family: Arial, sans-serif; padding: 20px;">
+       <p style="font-size: 16px;">נרשם חדש לאתר <strong>המלך אמר</strong>:</p>
+       <p style="font-size: 20px; font-weight: bold;">${subscriberEmail}</p>
+     </div>`
+  )
+}
+
 export async function sendNewTweetNotification(
   emails: string[],
   tweet: MatchedTweet,

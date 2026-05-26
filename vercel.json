@@ -1,9 +1,13 @@
 {
-  "installCommand": "npm install",
   "headers": [
     {
       "source": "/api/cron",
-      "headers": [{ "key": "Cache-Control", "value": "no-store" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
     }
   ]
 }

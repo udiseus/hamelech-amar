@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
-import { sendConfirmationEmail } from '@/lib/email'
+import { sendConfirmationEmail, sendOwnerNotification } from '@/lib/email'
 import { randomBytes } from 'crypto'
 
 export async function POST(req: NextRequest) {
@@ -45,6 +45,9 @@ export async function POST(req: NextRequest) {
   }
 
   await sendConfirmationEmail(normalizedEmail, token)
+
+  // שלח התראה לבעל האתר — אם נכשל, לא שוברים את ההרשמה
+  try { await sendOwnerNotification(normalizedEmail) } catch (e) { console.error('[Owner notify] failed:', e) }
 
   return NextResponse.json({ message: 'שלחנו מייל אישור. בדקו את תיבת הדואר.' })
 }

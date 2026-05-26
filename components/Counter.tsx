@@ -25,9 +25,10 @@ function formatUpdatedAt(iso: string): string {
 }
 
 export default function Counter({ count, updatedAt, color }: CounterProps) {
-  const [displayCount, setDisplayCount] = useState(0)
+  // מתחיל ישירות מה-count שנשלח מהשרת — ללא אנימציה מ-0
+  const [displayCount, setDisplayCount] = useState(count)
   const [pop, setPop] = useState(false)
-  const prevCount = useRef(0)
+  const prevCount = useRef(count)
 
   useEffect(() => {
     if (count === prevCount.current) return
@@ -89,7 +90,7 @@ export default function Counter({ count, updatedAt, color }: CounterProps) {
       </p>
 
       <p style={{ fontSize: 12, color: 'var(--text-muted)', fontFamily: 'Heebo, sans-serif', fontWeight: 300 }}>
-        נבדק נאחרונה: {formatUpdatedAt(updatedAt)}
+        נבדק לאחרונה: {formatUpdatedAt(updatedAt)}
       </p>
     </section>
   )

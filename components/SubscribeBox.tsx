@@ -68,15 +68,19 @@ export default function SubscribeBox() {
       {/* הצגת הודעה לאחר הסרת הרשמה */}
       {wasUnsubscribed ? (
         <div style={{
-          padding: '1rem',
+          padding: '1.2rem',
           borderRadius: 12,
-          background: 'rgba(100,100,100,0.1)',
-          color: 'var(--text-muted)',
-          border: '1px solid rgba(100,100,100,0.2)',
+          background: 'linear-gradient(135deg, rgba(226,201,126,0.12), rgba(124,58,237,0.1))',
+          border: '1px solid rgba(226,201,126,0.25)',
           fontFamily: 'Heebo, sans-serif',
-          fontWeight: 500,
         }}>
-          ✓ הוסרת מרשימת התפוצה. נתראה בממלכה 👋
+          <div style={{ fontSize: 32, marginBottom: 8 }}>👑</div>
+          <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--accent)', marginBottom: 4 }}>
+            הוסרת בהצלחה!
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 400 }}>
+            המלך ימשיך לדבר — אבל לא נטריד אותך יותר. שלום מהממלכה 👋
+          </div>
         </div>
 
       ) : status === 'success' ? (
@@ -153,47 +157,60 @@ export default function SubscribeBox() {
                   padding: 0,
                 }}
               >
-                כבר רשומ.ת? הסרת הרשמה
+                כבר נרשמת? להסרה מעדכוני המלך
               </button>
             ) : (
               /* טופס הסרה */
               <form
                 onSubmit={handleUnsubscribe}
-                style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}
+                style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}
               >
-                <input
-                  type="email"
-                  placeholder="האימייל שלך"
-                  value={unsubEmail}
-                  onChange={(e) => setUnsubEmail(e.target.value)}
-                  required
-                  style={{
-                    flex: '1 1 200px',
-                    borderRadius: 10,
-                    padding: '9px 14px',
-                    fontSize: 13,
-                    outline: 'none',
-                    background: 'rgba(255,255,255,0.08)',
-                    border: '1px solid rgba(255,255,255,0.15)',
-                    color: 'var(--text-main)',
-                    fontFamily: 'Heebo, sans-serif',
-                  }}
-                />
-                <button
-                  type="submit"
-                  style={{
-                    background: 'transparent',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    borderRadius: 10,
-                    padding: '9px 16px',
-                    fontSize: 12,
-                    color: 'var(--text-muted)',
-                    cursor: 'pointer',
-                    fontFamily: 'Heebo, sans-serif',
-                  }}
-                >
-                  הסרת הרשמה
-                </button>
+                <label style={{
+                  fontSize: 12,
+                  color: 'var(--text-muted)',
+                  fontFamily: 'Heebo, sans-serif',
+                  marginBottom: 2,
+                }}>
+                  הכנס.י את כתובת המייל שלך להסרה:
+                </label>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={unsubEmail}
+                    onChange={(e) => setUnsubEmail(e.target.value)}
+                    required
+                    autoFocus
+                    style={{
+                      flex: '1 1 210px',
+                      borderRadius: 10,
+                      padding: '10px 14px',
+                      fontSize: 14,
+                      outline: 'none',
+                      background: 'rgba(255,255,255,0.92)',
+                      border: '2px solid rgba(226,201,126,0.5)',
+                      color: '#1a0533',
+                      fontFamily: 'Heebo, sans-serif',
+                      fontWeight: 500,
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    style={{
+                      background: 'transparent',
+                      border: '1px solid rgba(226,201,126,0.35)',
+                      borderRadius: 10,
+                      padding: '10px 18px',
+                      fontSize: 13,
+                      color: 'var(--accent)',
+                      cursor: 'pointer',
+                      fontFamily: 'Heebo, sans-serif',
+                      fontWeight: 600,
+                    }}
+                  >
+                    הסירו אותי
+                  </button>
+                </div>
               </form>
             )}
           </div>

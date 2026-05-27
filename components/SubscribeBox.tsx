@@ -153,7 +153,7 @@ export default function SubscribeBox() {
                   padding: 0,
                 }}
               >
-                כבר רשום? הסר הרשמה
+                כבר רשומ.ת? הסרת הרשמה
               </button>
             ) : (
               /* טופס הסרה */
@@ -192,7 +192,7 @@ export default function SubscribeBox() {
                     fontFamily: 'Heebo, sans-serif',
                   }}
                 >
-                  הסר הרשמה
+                  הסרת הרשמה
                 </button>
               </form>
             )}

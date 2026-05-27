@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
       .update({ unsubscribed_at: null, confirmed: false, confirmation_token: token })
       .eq('email', normalizedEmail)
     await sendConfirmationEmail(normalizedEmail, token)
+    try { await sendOwnerNotification(normalizedEmail) } catch (e) { console.error('[Owner notify] failed:', e) }
     return NextResponse.json({ message: 'שלחנו מייל אישור. בדקו את תיבת הדואר.' })
   }
 

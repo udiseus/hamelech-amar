@@ -1,7 +1,8 @@
 import { Resend } from 'resend'
+import type { MatchedTweet } from './supabase'
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const nodemailer = require('nodemailer') as typeof import('nodemailer')
-import type { MatchedTweet } from './supabase'
 
 function getAppUrl() {
   return process.env.NEXT_PUBLIC_APP_URL || 'https://hamelech-amar.vercel.app'
@@ -30,7 +31,7 @@ function getResendFrom() {
 }
 
 function getGmailFrom() {
-  // RFC 2047 Base64 encoding — needed for Hebrew display names in all email clients
+  // RFC 2047 Base64 encoding — חובה לשמות תצוגה בעברית כדי שיוצגו נכון בכל לקוח מייל
   const b64 = Buffer.from('המלך אמר').toString('base64')
   return `=?UTF-8?B?${b64}?= <${process.env.GMAIL_USER}>`
 }
@@ -43,7 +44,7 @@ async function sendEmail(to: string, subject: string, html: string) {
       to,
       subject,
       html,
-      encoding: 'base64', // force base64 transfer encoding — ensures Hebrew/emoji render correctly in all clients
+      encoding: 'base64', // מבטיח קידוד נכון של עברית ואמוג׳י בכל לקוחות המייל
     })
     console.log('[Gmail] Sent OK, messageId:', info.messageId)
   } else {
@@ -63,22 +64,26 @@ async function sendEmail(to: string, subject: string, html: string) {
 
 export async function sendConfirmationEmail(email: string, token: string) {
   const confirmUrl = `${getAppUrl()}/api/confirm?token=${token}`
+  const unsubscribeUrl = `${getAppUrl()}/api/unsubscribe?email=${encodeURIComponent(email)}`
 
   await sendEmail(
     email,
-    'ÃÂÃÂ©ÃÂ¨ÃÂ ÃÂÃÂª ÃÂÃÂÃÂ¨ÃÂ©ÃÂÃÂ Ã¢ÂÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨',
+    'אשרו את ההרשמה — המלך אמר',
     `<meta charset="utf-8">
-    <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a0533; color: #e2c97e; padding: 40px; border-radius: 12px;">
-        <h1 style="color: #e2c97e; text-align: center; font-size: 28px;">Ã°ÂÂÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨</h1>
-        <p style="font-size: 18px; text-align: center;">ÃÂÃÂÃÂ¢ÃÂ ÃÂ¡ÃÂÃÂÃÂÃÂªÃÂ!</p>
-        <p style="font-size: 16px;">ÃÂÃÂÃÂ¦ÃÂ ÃÂ¢ÃÂ ÃÂÃÂÃÂ¤ÃÂªÃÂÃÂ¨ ÃÂÃÂÃÂ ÃÂÃÂÃÂ©ÃÂ¨ ÃÂÃÂª ÃÂÃÂÃÂ¨ÃÂ©ÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ:</p>
+      <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a0533; color: #e2c97e; padding: 40px; border-radius: 12px;">
+        <h1 style="color: #e2c97e; text-align: center; font-size: 28px;">👑 המלך אמר</h1>
+        <p style="font-size: 18px; text-align: center;">כמעט סיימתם!</p>
+        <p style="font-size: 16px;">לחצו על הכפתור כדי לאשר את ההרשמה לעדכונים מהממלכה:</p>
         <div style="text-align: center; margin: 30px 0;">
           <a href="${confirmUrl}" style="background: #e2c97e; color: #1a0533; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-size: 18px; font-weight: bold;">
-            ÃÂÃÂ©ÃÂ¨ ÃÂÃÂ¨ÃÂ©ÃÂÃÂ
+            אשר הרשמה
           </a>
         </div>
         <p style="font-size: 13px; color: #9b7fd4; text-align: center;">
-          ÃÂªÃÂ§ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ ÃÂ¨ÃÂ§ ÃÂÃÂ©ÃÂ ÃÂ¡ÃÂ¤ÃÂ¨ ÃÂ¦ÃÂÃÂÃÂ¥ ÃÂÃÂÃÂ©. ÃÂÃÂ ÃÂ ÃÂ¦ÃÂÃÂ§ Ã¢ÂÂ ÃÂÃÂÃÂÃÂ ÃÂ¢ÃÂÃÂ©ÃÂ ÃÂÃÂª ÃÂÃÂ ÃÂÃÂ©ÃÂÃÂÃÂÃÂ ÃÂ.
+          תקבלו מייל רק כשנספר ציוץ חדש. לא נציק — המלך עושה את זה בשבילנו.
+        </p>
+        <p style="font-size: 11px; color: #6b21a8; text-align: center; margin-top: 24px;">
+          נרשמתם בטעות? <a href="${unsubscribeUrl}" style="color: #9b7fd4;">הסירו את ההרשמה כאן</a>
         </p>
       </div>
     `
@@ -111,30 +116,30 @@ export async function sendNewTweetNotification(
 
   const makeHtml = (email: string) => `<meta charset="utf-8">
     <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a0533; color: #e2c97e; padding: 40px; border-radius: 12px;">
-      <h1 style="color: #e2c97e; text-align: center; font-size: 28px;">Ã°ÂÂÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨ ÃÂ©ÃÂÃÂ</h1>
-      <p style="font-size: 20px; text-align: center;">ÃÂÃÂÃÂÃÂ¢ÃÂ ÃÂÃÂÃÂÃÂ¤ÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ:</p>
-      <p style="font-size: 18px; text-align: center; color: #c4b5fd;">ÃÂÃÂ¨ÃÂ§ ÃÂ¨ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ.</p>
+      <h1 style="color: #e2c97e; text-align: center; font-size: 28px;">👑 המלך אמר שוב</h1>
+      <p style="font-size: 20px; text-align: center;">הודעה דחופה מהממלכה:</p>
+      <p style="font-size: 18px; text-align: center; color: #c4b5fd;">ברק רביד דיווח.</p>
       <div style="background: #2d1054; border: 1px solid #7c3aed; border-radius: 8px; padding: 20px; margin: 24px 0;">
         <p style="font-size: 16px; margin: 0; line-height: 1.7;">"${tweetPreview}"</p>
       </div>
       <p style="font-size: 22px; text-align: center; color: #e2c97e;">
-        ÃÂÃÂ§ÃÂÃÂÃÂ ÃÂÃÂ¨ ÃÂ¢ÃÂÃÂ ÃÂÃÂ¾<strong style="font-size: 36px;">${totalCount}</strong>
+        הקאונטר עלה ל־<strong style="font-size: 36px;">${totalCount}</strong>
       </p>
       <div style="text-align: center; margin: 30px 0;">
         <a href="${tweet.url}" style="background: #7c3aed; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 16px; margin: 0 8px; display: inline-block;">
-          ÃÂÃÂ¦ÃÂÃÂÃÂ¥ ÃÂÃÂ¾X
+          לציוץ ב־X
         </a>
         <a href="${appUrl}" style="background: #e2c97e; color: #1a0533; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 16px; font-weight: bold; margin: 0 8px; display: inline-block;">
-          ÃÂÃÂ¢ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨
+          לעמוד המלך אמר
         </a>
       </div>
       <p style="font-size: 12px; color: #6b21a8; text-align: center; margin-top: 40px;">
-        ÃÂÃÂ ÃÂ¨ÃÂÃÂ¦ÃÂÃÂ ÃÂÃÂÃÂªÃÂ¨ ÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ? <a href="${appUrl}/api/unsubscribe?email=${encodeURIComponent(email)}" style="color: #9b7fd4;">ÃÂÃÂ¡ÃÂ¨ ÃÂÃÂ¨ÃÂ©ÃÂÃÂ</a>
+        לא רוצים יותר עדכונים? <a href="${appUrl}/api/unsubscribe?email=${encodeURIComponent(email)}" style="color: #9b7fd4;">הסר הרשמה</a>
       </p>
     </div>
   `
 
-  const subject = `ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ¨ ÃÂ©ÃÂÃÂ Ã¢ÂÂ ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂ¨: ${totalCount}`
+  const subject = `המלך אמר שוב — קאונטר: ${totalCount}`
 
   if (useGmail()) {
     const transporter = getGmailTransporter()

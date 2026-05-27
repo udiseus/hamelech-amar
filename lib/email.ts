@@ -72,18 +72,18 @@ export async function sendConfirmationEmail(email: string, token: string) {
     `<meta charset="utf-8">
       <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a0533; color: #e2c97e; padding: 40px; border-radius: 12px;">
         <h1 style="color: #e2c97e; text-align: center; font-size: 28px;">👑 המלך אמר</h1>
-        <p style="font-size: 18px; text-align: center;">כמעט סיימתם!</p>
+        <p style="font-size: 18px; text-align: center;">כמעט סיימנו!</p>
         <p style="font-size: 16px;">לחצו על הכפתור כדי לאשר את ההרשמה לעדכונים מהממלכה:</p>
         <div style="text-align: center; margin: 30px 0;">
           <a href="${confirmUrl}" style="background: #e2c97e; color: #1a0533; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-size: 18px; font-weight: bold;">
-            אשר הרשמה
+            אישור הרשמה
           </a>
         </div>
         <p style="font-size: 13px; color: #9b7fd4; text-align: center;">
           תקבלו מייל רק כשנספר ציוץ חדש. לא נציק — המלך עושה את זה בשבילנו.
         </p>
         <p style="font-size: 11px; color: #6b21a8; text-align: center; margin-top: 24px;">
-          נרשמתם בטעות? <a href="${unsubscribeUrl}" style="color: #9b7fd4;">הסירו את ההרשמה כאן</a>
+          נרשמת.ם בטעות? <a href="${unsubscribeUrl}" style="color: #9b7fd4;">הסרת הרשמה</a>
         </p>
       </div>
     `
@@ -134,7 +134,7 @@ export async function sendNewTweetNotification(
         </a>
       </div>
       <p style="font-size: 12px; color: #6b21a8; text-align: center; margin-top: 40px;">
-        לא רוצים יותר עדכונים? <a href="${appUrl}/api/unsubscribe?email=${encodeURIComponent(email)}" style="color: #9b7fd4;">הסר הרשמה</a>
+        לא רוצ.ים יותר עדכונים? <a href="${appUrl}/api/unsubscribe?email=${encodeURIComponent(email)}" style="color: #9b7fd4;">הסרת הרשמה</a>
       </p>
     </div>
   `

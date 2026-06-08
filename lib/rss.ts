@@ -2,7 +2,7 @@ import Parser from 'rss-parser'
 
 // RSS sources in priority order.
 // RSSHub is the most reliable from cloud IPs (AWS/Vercel).
-// Nitter instances are kept as fallback — many block cloud IPs but some don't.
+// Nitter instances are kept as fallback — iany block cloud IPs but some don't.
 const RSS_SOURCES = [
   // RSSHub — community-maintained, most reliable from cloud
   'https://rsshub.app/twitter/user/BarakRavid',
@@ -89,19 +89,20 @@ async function fetchFromUrl(feedUrl: string): Promise<RawTweet[]> {
   const results: RawTweet[] = []
 
   for (const item of feed.items) {
-    // Try all possible text fields — different RSS sources use different fields
-    const text = [
-      item.contentSnippet,
-      item.content,
-      item.title,
-      item['media:description'],
-    ].filter(Boolean).join(' ')
-
+    const title = (item.title ?? '').trim()
     const link = item.link ?? ''
     const pubDate = item.pubDate ?? new Date().toISOString()
 
+    // Skip retweets — they are not original Barak Ravid tweets.
+    // Nitter marks RTs as "RT by @username: ..." in the title field.
+    if (title.startsWith('RT by @') || title.startsWith('RT @')) continue
+
+    // Match ONLY on the tweet title (the actual tweet text).
+    // Do NOT use content/description — Nitter embeds quoted/replied tweets
+    // in the description, which can contain "Trump tells me" from other tweets
+    // and cause false positives.
     const matchedPhrase = SEARCH_PHRASES.find((p) =>
-      text.toLowerCase().includes(p.toLowerCase())
+      title.toLowerCase().includes(p.toLowerCase())
     )
     if (!matchedPhrase) continue
 
@@ -110,7 +111,7 @@ async function fetchFromUrl(feedUrl: string): Promise<RawTweet[]> {
 
     results.push({
       tweet_id: tweetId,
-      text,
+      text: title,
       created_at: new Date(pubDate).toISOString(),
       url: `https://x.com/BarakRavid/status/${tweetId}`,
       matched_phrase: matchedPhrase,
@@ -155,8 +156,10 @@ export async function debugAllSources(): Promise<{
         const feed = await parser.parseURL(url)
         const itemCount = feed.items?.length ?? 0
         const matchCount = (feed.items ?? []).filter((item) => {
-          const text = [item.contentSnippet, item.content, item.title].filter(Boolean).join(' ')
-          return SEARCH_PHRASES.some((p) => text.toLowerCase().includes(p.toLowerCase()))
+          const title = (item.title ?? '').trim()
+          // Apply same RT filter and title-only matching as fetchFromUrl
+          if (title.startsWith('RT by @') || title.startsWith('RT @')) return false
+          return SEARCH_PHRASES.some((p) => title.toLowerCase().includes(p.toLowerCase()))
         }).length
         const firstItem = feed.items?.[0]?.title?.slice(0, 80) ?? ''
         return { url, ok: true, itemCount, matchCount, firstItem }

@@ -1,14 +1,23 @@
 import Parser from 'rss-parser'
 
-const NITTER_INSTANCES = [
-  'https://nitter.poast.org',
-  'https://nitter.privacydev.net',
-  'https://nitter.1d4.us',
-  'https://nitter.rawbit.ninja',
-  'https://lightsky.fun',
-  'https://nitter.cz',
-  'https://nitter.it',
-  'https://nitter.lucahammer.com',
+// RSS sources in priority order.
+// RSSHub is the most reliable from cloud IPs (AWS/Vercel).
+// Nitter instances are kept as fallback — many block cloud IPs but some don't.
+const RSS_SOURCES = [
+  // RSSHub — community-maintained, most reliable from cloud
+  'https://rsshub.app/twitter/user/BarakRavid',
+  'https://rsshub.rssforever.com/twitter/user/BarakRavid',
+  // Nitter instances — try several, some work from cloud IPs
+  'https://nitter.privacyredirect.com/BarakRavid/rss',
+  'https://xcancel.com/BarakRavid/rss',
+  'https://nitter.poast.org/BarakRavid/rss',
+  'https://nitter.rawbit.ninja/BarakRavid/rss',
+  'https://nitter.1d4.us/BarakRavid/rss',
+  'https://nitter.space/BarakRavid/rss',
+  'https://nitter.net/BarakRavid/rss',
+  'https://bird.trom.tf/BarakRavid/rss',
+  'https://n.opnxng.com/BarakRavid/rss',
+  'https://nitter.privacydev.net/BarakRavid/rss',
 ]
 
 // All phrases we track — English + Hebrew
@@ -69,14 +78,25 @@ function extractTweetId(url: string): string | null {
   return match ? match[1] : null
 }
 
-async function fetchFromInstance(instance: string): Promise<RawTweet[]> {
-  const parser = new Parser({ timeout: 8000 })
-  const feedUrl = `${instance}/BarakRavid/rss`
+async function fetchFromUrl(feedUrl: string): Promise<RawTweet[]> {
+  const parser = new Parser({ timeout: 10000 })
   const feed = await parser.parseURL(feedUrl)
+
+  if (!feed.items || feed.items.length === 0) {
+    throw new Error('Empty feed')
+  }
+
   const results: RawTweet[] = []
 
-  for (const item of feed.items ?? []) {
-    const text = item.contentSnippet ?? item.title ?? ''
+  for (const item of feed.items) {
+    // Try all possible text fields — different RSS sources use different fields
+    const text = [
+      item.contentSnippet,
+      item.content,
+      item.title,
+      item['media:description'],
+    ].filter(Boolean).join(' ')
+
     const link = item.link ?? ''
     const pubDate = item.pubDate ?? new Date().toISOString()
 
@@ -100,15 +120,49 @@ async function fetchFromInstance(instance: string): Promise<RawTweet[]> {
 }
 
 export async function fetchNewTweets(): Promise<RawTweet[]> {
-  for (const instance of NITTER_INSTANCES) {
+  const errors: string[] = []
+
+  for (const url of RSS_SOURCES) {
     try {
-      const tweets = await fetchFromInstance(instance)
-      console.log(`[rss] ${tweets.length} matched from ${instance}`)
+      const tweets = await fetchFromUrl(url)
+      console.log(`[rss] SUCCESS ${url} → ${tweets.length} matched`)
       return tweets
     } catch (err) {
-      console.warn(`[rss] ${instance} failed:`, (err as Error).message)
+      const msg = (err as Error).message
+      console.warn(`[rss] FAIL ${url}: ${msg}`)
+      errors.push(`${url}: ${msg}`)
     }
   }
-  console.error('[rss] all Nitter instances failed')
+
+  console.error('[rss] ALL sources failed:', errors.join(' | '))
   return []
+}
+
+// Debug helper — tests all sources and returns status of each.
+// Used by /api/debug-rss
+export async function debugAllSources(): Promise<{
+  url: string
+  ok: boolean
+  itemCount?: number
+  matchCount?: number
+  error?: string
+  firstItem?: string
+}[]> {
+  return Promise.all(
+    RSS_SOURCES.map(async (url) => {
+      try {
+        const parser = new Parser({ timeout: 10000 })
+        const feed = await parser.parseURL(url)
+        const itemCount = feed.items?.length ?? 0
+        const matchCount = (feed.items ?? []).filter((item) => {
+          const text = [item.contentSnippet, item.content, item.title].filter(Boolean).join(' ')
+          return SEARCH_PHRASES.some((p) => text.toLowerCase().includes(p.toLowerCase()))
+        }).length
+        const firstItem = feed.items?.[0]?.title?.slice(0, 80) ?? ''
+        return { url, ok: true, itemCount, matchCount, firstItem }
+      } catch (err) {
+        return { url, ok: false, error: (err as Error).message }
+      }
+    })
+  )
 }

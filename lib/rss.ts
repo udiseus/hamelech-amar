@@ -1,44 +1,64 @@
 import Parser from 'rss-parser'
 
-// Nitter instances to try — ordered by reliability from cloud IPs.
-// nitter.privacyredirect.com is currently the only confirmed-working instance.
-const NITTER_INSTANCES = [
+// ── Fallback list — used only if status.d420.de is unreachable ───────────────
+const NITTER_INSTANCES_FALLBACK = [
   'https://nitter.privacyredirect.com',
   'https://nitter.poast.org',
   'https://xcancel.com',
-  'https://nitter.rawbit.ninja',
-  'https://nitter.space',
   'https://nitter.net',
-  'https://n.opnxng.com',
-  'https://bird.trom.tf',
-  'https://nitter.privacydev.net',
-  'https://nitter.1d4.us',
+  'https://nitter.space',
 ]
 
-// Search queries — one per key phrase/verb so nothing falls through.
+// ── Dynamic instance discovery ───────────────────────────────────────────────
+// Fetches the live list of healthy Nitter instances from status.d420.de.
+// Filters for healthy:true AND rss:true (rss:false = RSS disabled at config level).
+async function getHealthyInstances(): Promise<string[]> {
+  try {
+    const res = await fetch('https://status.d420.de/api/v1/instances/', {
+      signal: AbortSignal.timeout(5000),
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const data = await res.json() as {
+      hosts: Array<{ url: string; healthy: boolean; rss: boolean }>
+    }
+    const instances = (data.hosts ?? [])
+      .filter((h) => h.healthy === true && h.rss === true)
+      .map((h) => h.url.replace(/\/$/,  ''))
+    if (instances.length > 0) {
+      console.log(
+        `[rss] status.d420.de → ${instances.length} healthy RSS instances: ${instances.join(', ')}`
+      )
+      return instances
+    }
+    throw new Error('no healthy RSS instances returned')
+  } catch (err) {
+    console.warn('[rss] status.d420.de unavailable, using fallback:', (err as Error).message)
+    return NITTER_INSTANCES_FALLBACK
+  }
+}
+
+// ── Search queries — one per key phrase/verb ─────────────────────────────────
 // WHY SEARCH INSTEAD OF FEED:
-//   User feed = last 20 tweets regardless of content → if there's downtime, tweets fall out of window.
-//   Search RSS = last 20 tweets *matching the query* → 20 results spans weeks/months, not hours.
-// IMPORTANT: each query determines what Nitter returns. SEARCH_PHRASES below is only a
-// secondary filter. Any phrase NOT covered by a query here will never reach the filter.
+//   User feed = last 20 tweets regardless of content → tweets fall out of window during downtime.
+//   Search RSS = last 20 tweets *matching the query* → spans weeks/months.
 const SEARCH_QUERIES = [
-  // ── English ──────────────────────────────────────────────────────────────
-  'from:BarakRavid "told me"',       // Trump told me, told me in a call, etc.
-  'from:BarakRavid "tells me"',      // Trump tells me (present tense)
-  'from:BarakRavid "said to me"',    // Trump said to me
-  'from:BarakRavid "says to me"',    // Trump says to me
-  // ── Hebrew ───────────────────────────────────────────────────────────────
-  'from:BarakRavid "אמר לי"',        // טראמפ אמר לי (most common)
-  'from:BarakRavid "סיפר לי"',       // טראמפ סיפר לי
-  'from:BarakRavid "מסר לי"',        // טראמפ מסר לי
-  'from:BarakRavid "אמר לאקסיוס"',   // טראמפ אמר לאקסיוס
-  'from:BarakRavid "שוחחתי עם"',     // שוחחתי עם טראמפ
-  'from:BarakRavid "בשיחה איתי"',    // אמר/הבהיר בשיחה איתי
-  'from:BarakRavid "בראיון שהעניק"', // בראיון שהעניק לי
-  'from:BarakRavid "מעורה בפרטים"',  // מקור שמעורה בפרטים
+  // English
+  'from:BarakRavid "told me"',
+  'from:BarakRavid "tells me"',
+  'from:BarakRavid "said to me"',
+  'from:BarakRavid "says to me"',
+  // Hebrew
+  'from:BarakRavid "אמר לי"',
+  'from:BarakRavid "סיפר לי"',
+  'from:BarakRavid "מסר לי"',
+  'from:BarakRavid "אמר לאקסיוס"',
+  'from:BarakRavid "שוחחתי עם"',
+  'from:BarakRavid "בשיחה איתי"',
+  'from:BarakRavid "בראיון שהעניק"',
+  'from:BarakRavid "מעורה בפרטים"',
 ]
 
-// Fallback: user feed (old behavior). Used only if ALL search URLs fail.
+// Fallback: user feed — used only if ALL search URLs fail
 const FEED_FALLBACK_SOURCES = [
   'https://rsshub.app/twitter/user/BarakRavid',
   'https://rsshub.rssforever.com/twitter/user/BarakRavid',
@@ -47,8 +67,7 @@ const FEED_FALLBACK_SOURCES = [
   'https://nitter.poast.org/BarakRavid/rss',
 ]
 
-// All phrases we track — English + Hebrew.
-// Used as a safety filter even on search results (guards against Nitter returning unrelated content).
+// Secondary phrase filter — guards against Nitter returning unrelated content
 export const SEARCH_PHRASES = [
   // Core English
   'Trump told me',
@@ -128,10 +147,8 @@ async function fetchFromUrl(feedUrl: string): Promise<RawTweet[]> {
     const link = item.link ?? ''
     const pubDate = item.pubDate ?? new Date().toISOString()
 
-    // Skip retweets
     if (title.startsWith('RT by @') || title.startsWith('RT @')) continue
 
-    // Match only on the tweet title (not description — avoids false positives from quoted tweets)
     const matchedPhrase = SEARCH_PHRASES.find((p) =>
       title.toLowerCase().includes(p.toLowerCase())
     )
@@ -161,9 +178,10 @@ function dedupeByTweetId(tweets: RawTweet[]): RawTweet[] {
 }
 
 export async function fetchNewTweets(): Promise<RawTweet[]> {
-  // PHASE 1: Try search RSS from all instances × all queries, in parallel.
-  // This is the reliable path — search results span weeks, not just the last 20 tweets.
-  const searchUrls = NITTER_INSTANCES.flatMap((instance) =>
+  // PHASE 1: Fetch live list of healthy RSS-capable Nitter instances,
+  // then try all instance × query combos in parallel.
+  const instances = await getHealthyInstances()
+  const searchUrls = instances.flatMap((instance) =>
     SEARCH_QUERIES.map((q) => buildSearchUrl(instance, q))
   )
 
@@ -187,7 +205,7 @@ export async function fetchNewTweets(): Promise<RawTweet[]> {
     return deduped
   }
 
-  // PHASE 2: Fallback to user feed (old behavior) if all search URLs failed.
+  // PHASE 2: Fallback to user feed if all search URLs failed
   console.warn('[rss] all search URLs failed — falling back to user feed')
   const errors: string[] = []
 
@@ -218,7 +236,8 @@ export async function debugAllSources(): Promise<{
   error?: string
   firstItem?: string
 }[]> {
-  const searchUrls = NITTER_INSTANCES.flatMap((instance) =>
+  const instances = await getHealthyInstances()
+  const searchUrls = instances.flatMap((instance) =>
     SEARCH_QUERIES.map((q) => ({ url: buildSearchUrl(instance, q), type: 'search' as const }))
   )
   const feedUrls = FEED_FALLBACK_SOURCES.map((url) => ({ url, type: 'feed' as const }))

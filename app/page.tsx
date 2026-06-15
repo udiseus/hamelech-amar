@@ -24,12 +24,30 @@ function getMoodColor(latestTweetDate: string | null): string {
 
 async function getData() {
   const supabase = getSupabase()
-  const [countResult, archiveResult] = await Promise.all([
-    supabase.from('matched_tweets').select('*').order('count_number', { ascending: false }).limit(1).single(),
-    supabase.from('matched_tweets').select('*').order('count_number', { ascending: false }).limit(50),
+  const [countResult, latestResult, archiveResult] = await Promise.all([
+    // Total count = max count_number
+    supabase
+      .from('matched_tweets')
+      .select('count_number')
+      .order('count_number', { ascending: false })
+      .limit(1)
+      .single(),
+    // Latest tweet = most recent by actual tweet date
+    supabase
+      .from('matched_tweets')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single(),
+    // Archive = chronological, newest first
+    supabase
+      .from('matched_tweets')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50),
   ])
-  const latestTweet: MatchedTweet | null = countResult.data ?? null
-  const totalCount = latestTweet?.count_number ?? 0
+  const totalCount = countResult.data?.count_number ?? 0
+  const latestTweet: MatchedTweet | null = latestResult.data ?? null
   const archive: MatchedTweet[] = archiveResult.data ?? []
   return { totalCount, latestTweet, archive }
 }

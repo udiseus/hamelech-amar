@@ -7,6 +7,7 @@ export async function GET() {
   const supabase = getSupabase()
 
   const [countResult, latestResult, archiveResult] = await Promise.all([
+    // Total count = max count_number (total detections ever)
     supabase
       .from('matched_tweets')
       .select('count_number')
@@ -14,17 +15,19 @@ export async function GET() {
       .limit(1)
       .single(),
 
+    // Latest tweet = most recent by actual tweet date, not discovery order
     supabase
       .from('matched_tweets')
       .select('*')
-      .order('count_number', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(1)
       .single(),
 
+    // Archive = chronological order, newest first
     supabase
       .from('matched_tweets')
       .select('*')
-      .order('count_number', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(50),
   ])
 

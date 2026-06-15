@@ -4,7 +4,6 @@ import { fetchNewTweets } from '@/lib/rss'
 import { sendNewTweetNotification } from '@/lib/email'
 
 export async function GET(req: NextRequest) {
-  // אם CRON_SECRET מוגדר — מאמתים את הבקשה; אם לא — פותחים לכולם (למצב פיתוח)
   const cronSecret = process.env.CRON_SECRET
   if (cronSecret) {
     const authHeader = req.headers.get('authorization')
@@ -16,21 +15,13 @@ export async function GET(req: NextRequest) {
   const supabaseAdmin = getSupabaseAdmin()
 
   try {
-    const { data: latestSaved } = await supabaseAdmin
-      .from('matched_tweets')
-      .select('tweet_id, count_number')
-      .order('count_number', { ascending: false })
-      .limit(1)
-      .single()
-
-    let currentCount = latestSaved?.count_number ?? 0
-
     const candidates = await fetchNewTweets()
 
     if (candidates.length === 0) {
       return NextResponse.json({ message: 'No matched tweets in feed', checked_at: new Date().toISOString() })
     }
 
+    // Sort chronologically before inserting
     candidates.sort(
       (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     )
@@ -46,14 +37,14 @@ export async function GET(req: NextRequest) {
 
       if (existing) continue
 
-      currentCount += 1
+      // Insert with placeholder count_number=0 — will be fixed by reassignment below
       const { error } = await supabaseAdmin.from('matched_tweets').insert({
         tweet_id: tweet.tweet_id,
         text: tweet.text,
         created_at: tweet.created_at,
         url: tweet.url,
         matched_phrase: tweet.matched_phrase,
-        count_number: currentCount,
+        count_number: 0,
         detected_at: new Date().toISOString(),
       })
 
@@ -64,6 +55,26 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: 'All tweets already in DB' })
     }
 
+    // Reassign ALL count_numbers chronologically
+    const { data: allTweets } = await supabaseAdmin
+      .from('matched_tweets')
+      .select('id, created_at')
+      .order('created_at', { ascending: true })
+
+    if (allTweets) {
+      await Promise.all(
+        allTweets.map((t, i) =>
+          supabaseAdmin
+            .from('matched_tweets')
+            .update({ count_number: i + 1 })
+            .eq('id', t.id)
+        )
+      )
+    }
+
+    const newTotal = allTweets?.length ?? 0
+
+    // Notify subscribers
     const { data: confirmedSubscribers } = await supabaseAdmin
       .from('subscribers')
       .select('email')
@@ -73,21 +84,22 @@ export async function GET(req: NextRequest) {
     const emails = confirmedSubscribers?.map((s) => s.email) ?? []
 
     if (emails.length > 0) {
-      const { data: latestInserted } = await supabaseAdmin
+      // Send notification for the most recent tweet by actual date
+      const { data: latestByDate } = await supabaseAdmin
         .from('matched_tweets')
         .select('*')
-        .order('count_number', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(1)
         .single()
 
-      if (latestInserted) {
-        await sendNewTweetNotification(emails, latestInserted, latestInserted.count_number)
+      if (latestByDate) {
+        await sendNewTweetNotification(emails, latestByDate, latestByDate.count_number)
       }
     }
 
     return NextResponse.json({
       inserted: inserted.length,
-      new_count: currentCount,
+      new_total: newTotal,
       notified: emails.length,
     })
   } catch (err) {

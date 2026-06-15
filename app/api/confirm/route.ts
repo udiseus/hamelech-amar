@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
+import { sendOwnerNotification } from '@/lib/email'
 
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token')
@@ -13,7 +14,7 @@ export async function GET(req: NextRequest) {
   // Find subscriber by token first
   const { data: subscriber } = await supabaseAdmin
     .from('subscribers')
-    .select('id')
+    .select('id, email')
     .eq('confirmation_token', token)
     .single()
 
@@ -30,6 +31,11 @@ export async function GET(req: NextRequest) {
   if (error) {
     return NextResponse.redirect(new URL('/?confirmed=error', req.url))
   }
+
+  // Notify owner — fire and forget, don't block the redirect
+  sendOwnerNotification(subscriber.email).catch((err) =>
+    console.error('[confirm] owner notification failed:', err)
+  )
 
   return NextResponse.redirect(new URL('/?confirmed=true', req.url))
 }

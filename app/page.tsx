@@ -122,16 +122,17 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
           <p
             className="font-title"
             style={{
-              fontSize: 'clamp(14px, 2.6vw, 19px)',
-              fontWeight: 600,
-              color: 'rgba(255,255,255,0.90)',
-              textShadow: '0 2px 14px rgba(0,0,0,0.55)',
+              fontSize: 'clamp(16px, 3.2vw, 26px)',
+              fontWeight: 400,
+              color: 'rgba(255,255,255,0.85)',
+              textShadow: '0 2px 14px rgba(0,0,0,0.50)',
               maxWidth: 500,
               margin: '0 auto 1.8rem',
-              lineHeight: 1.6,
+              lineHeight: 1.5,
+              letterSpacing: '0.01em',
             }}
           >
-            אנחנו כאן כדי לוודא שאף &ldquo;אמר לי&rdquo; לא ילך לאיבוד בדפי ההיסטוריה.
+            כי מישהו צריך לספור.
           </p>
 
           {/* Down arrow → smooth scroll to content */}

@@ -10,7 +10,6 @@ interface CounterProps {
 
 function formatUpdatedAt(iso: string): string {
   const d = new Date(iso)
-  // אם המחרוזת לא תאריך תקין (למשל "עכשיו") — מחזירים אותה כפי שהיא
   if (isNaN(d.getTime())) return iso
   const now = new Date()
   const diffMs = now.getTime() - d.getTime()
@@ -27,7 +26,6 @@ function formatUpdatedAt(iso: string): string {
 }
 
 export default function Counter({ count, updatedAt, color }: CounterProps) {
-  // מתחיל ישירות מה-count שנשלח מהשרת — ללא אנימציה מ-0
   const [displayCount, setDisplayCount] = useState(count)
   const [pop, setPop] = useState(false)
   const prevCount = useRef(count)
@@ -53,13 +51,27 @@ export default function Counter({ count, updatedAt, color }: CounterProps) {
     requestAnimationFrame(step)
   }, [count])
 
+  const activeColor = color ?? 'var(--gold)'
+
   return (
-    <section className="card text-center fade-in-up" style={{ animationDelay: '0.1s', padding: '2rem 1.5rem 1.5rem' }}>
+    <section
+      className="card text-center fade-in-up"
+      style={{
+        animationDelay: '0.1s',
+        padding: '2rem 1.5rem 1.5rem',
+        borderTop: `3px solid ${activeColor}`,
+        borderRadius: '0 0 16px 16px',
+        /* override top radius so the gold rule meets the corners cleanly */
+        borderTopLeftRadius: 0,
+        borderTopRightRadius: 0,
+      }}
+    >
       <p style={{
         fontFamily: 'Heebo, sans-serif',
         fontWeight: 400,
-        fontSize: 'clamp(15px, 3vw, 18px)',
+        fontSize: 'clamp(15px, 3vw, 17px)',
         color: 'var(--text-muted)',
+        letterSpacing: '0.01em',
         marginBottom: '0.1rem',
       }}>
         ברק רביד כתב &ldquo;טראמפ אמר לי&rdquo; כבר
@@ -71,9 +83,9 @@ export default function Counter({ count, updatedAt, color }: CounterProps) {
           style={{
             fontSize: 'clamp(100px, 22vw, 164px)',
             fontWeight: 900,
-            color: color ?? 'var(--gold)',
+            color: activeColor,
             lineHeight: 1,
-            textShadow: `0 0 40px ${color ?? 'rgba(176,128,16,0.3)'}44`,
+            textShadow: `0 0 40px ${activeColor}33`,
             display: 'block',
           }}
         >
@@ -85,13 +97,20 @@ export default function Counter({ count, updatedAt, color }: CounterProps) {
         fontSize: 'clamp(22px, 5vw, 30px)',
         fontWeight: 700,
         color: 'var(--text-main)',
-        marginBottom: '1rem',
+        marginBottom: '1.1rem',
         marginTop: '0.1rem',
+        letterSpacing: '-0.01em',
       }}>
         פעמים
       </p>
 
-      <p style={{ fontSize: 12, color: 'var(--text-muted)', fontFamily: 'Heebo, sans-serif', fontWeight: 300 }}>
+      <p style={{
+        fontSize: 12,
+        color: 'var(--text-muted)',
+        fontFamily: 'Heebo, sans-serif',
+        fontWeight: 300,
+        letterSpacing: '0.02em',
+      }}>
         נבדק לאחרונה: {formatUpdatedAt(updatedAt)}
       </p>
     </section>

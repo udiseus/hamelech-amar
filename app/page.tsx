@@ -48,7 +48,7 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
 
       {/* ══════════════════════════════════════
           HERO — sky video + illustration
-     .══════════════════════════════════════ */}
+      ══════════════════════════════════════ */}
       <div
         className="fade-in-up hero-section"
         style={{
@@ -124,12 +124,16 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
             style={{
               fontSize: 'clamp(16px, 3.2vw, 26px)',
               fontWeight: 400,
-              color: 'rgba(255,255,255,0.85)',
-              textShadow: '0 2px 14px rgba(0,0,0,0.50)',
-              maxWidth: 500,
+              color: 'rgba(255,255,255,0.92)',
               margin: '0 auto 1.8rem',
               lineHeight: 1.5,
               letterSpacing: '0.01em',
+              display: 'inline-block',
+              background: 'rgba(14,30,54,0.80)',
+              border: '1px solid rgba(255,255,255,0.18)',
+              borderRadius: 10,
+              padding: '6px 22px',
+              backdropFilter: 'blur(6px)',
             }}
           >
             והיד עוד נטויה.

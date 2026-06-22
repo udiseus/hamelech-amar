@@ -3,23 +3,18 @@
 import { useState, useEffect } from 'react'
 
 export default function SubscribeBox() {
-  // --- סטייט להרשמה ---
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
-
-  // --- סטייט להסרת הרשמה ---
   const [showUnsub, setShowUnsub] = useState(false)
   const [unsubEmail, setUnsubEmail] = useState('')
   const [wasUnsubscribed, setWasUnsubscribed] = useState(false)
 
-  // --- בדיקה אם הגיעו חזרה אחרי הסרת הרשמה (?unsubscribed=true) ---
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('unsubscribed') === 'true') setWasUnsubscribed(true)
   }, [])
 
-  // --- שליחת טופס הרשמה ---
   async function handleSubscribe(e: React.FormEvent) {
     e.preventDefault()
     if (!email.trim()) return
@@ -45,7 +40,6 @@ export default function SubscribeBox() {
     }
   }
 
-  // --- שליחת טופס הסרת הרשמה --- מעביר לנתיב API שמטפל ב-redirect
   function handleUnsubscribe(e: React.FormEvent) {
     e.preventDefault()
     if (!unsubEmail.trim()) return
@@ -56,26 +50,25 @@ export default function SubscribeBox() {
     <section className="card" style={{ textAlign: 'center' }}>
 
       <h2 className="font-title" style={{
-        fontSize: 'clamp(22px, 5vw, 32px)',
-        fontWeight: 900,
-        color: 'var(--accent)',
+        fontSize: 'clamp(22px, 5vw, 30px)',
+        fontWeight: 700,
+        color: 'var(--text-main)',
         letterSpacing: '-0.02em',
         marginBottom: '0.5rem',
       }}>
         רוצה לדעת כשהמלך אומר לו שוב?
       </h2>
 
-      {/* הצגת הודעה לאחר הסרת הרשמה */}
       {wasUnsubscribed ? (
         <div style={{
           padding: '1.2rem',
           borderRadius: 12,
-          background: 'linear-gradient(135deg, rgba(226,201,126,0.12), rgba(124,58,237,0.1))',
-          border: '1px solid rgba(226,201,126,0.25)',
+          background: 'rgba(176,128,16,0.07)',
+          border: '1px solid rgba(176,128,16,0.22)',
           fontFamily: 'Heebo, sans-serif',
         }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>👑</div>
-          <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--accent)', marginBottom: 4 }}>
+          <div style={{ fontSize: 28, marginBottom: 8 }}>👑</div>
+          <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--gold)', marginBottom: 4 }}>
             הוסרת בהצלחה!
           </div>
           <div style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 400 }}>
@@ -84,22 +77,20 @@ export default function SubscribeBox() {
         </div>
 
       ) : status === 'success' ? (
-        /* הצגת הודעת הצלחה לאחר הרשמה */
         <div style={{
           padding: '1rem',
           borderRadius: 12,
-          background: 'rgba(30,106,168,0.1)',
-          color: 'var(--accent)',
-          border: '1px solid rgba(30,106,168,0.3)',
+          background: 'rgba(176,128,16,0.07)',
+          color: 'var(--gold)',
+          border: '1px solid rgba(176,128,16,0.25)',
           fontFamily: 'Heebo, sans-serif',
-          fontWeight: 500,
+          fontWeight: 600,
         }}>
           ✓ {message}
         </div>
 
       ) : (
         <>
-          {/* טופס הרשמה */}
           <form onSubmit={handleSubscribe} style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
             <input
               type="email"
@@ -108,14 +99,14 @@ export default function SubscribeBox() {
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={status === 'loading'}
+              className="input-field"
               style={{
                 flex: '1 1 220px',
                 borderRadius: 12,
                 padding: '12px 16px',
                 fontSize: 15,
-                outline: 'none',
-                background: 'rgba(255,255,255,0.9)',
-                border: '1.5px solid rgba(30,106,168,0.35)',
+                background: 'rgba(255,255,255,0.92)',
+                border: '1.5px solid rgba(14,30,54,0.18)',
                 color: 'var(--text-main)',
                 fontFamily: 'Heebo, sans-serif',
               }}
@@ -124,26 +115,34 @@ export default function SubscribeBox() {
               type="submit"
               disabled={status === 'loading'}
               className="btn-primary"
-              style={{ fontFamily: 'Heebo, sans-serif', fontWeight: 600 }}
+              style={{ fontFamily: 'Heebo, sans-serif', fontWeight: 700 }}
             >
               {status === 'loading' ? '...' : 'אני חייב.ת לדעת'}
             </button>
           </form>
 
-          {/* הודעת שגיאה */}
           {status === 'error' && (
             <p style={{ marginTop: 8, fontSize: 13, color: '#c0392b', fontFamily: 'Heebo, sans-serif' }}>{message}</p>
           )}
 
-          <p style={{ marginTop: 12, fontSize: 12, color: 'var(--text-muted)', fontFamily: 'Heebo, sans-serif', fontWeight: 300, background: 'none' }}>
-            <span style={{ color: 'var(--accent)', fontWeight: 700, marginLeft: 4 }}>⁕</span>
+          <p style={{
+            marginTop: 12,
+            fontSize: 12,
+            color: 'var(--text-muted)',
+            fontFamily: 'Heebo, sans-serif',
+            fontWeight: 300,
+            background: 'none',
+          }}>
+            <span style={{ color: 'var(--gold)', fontWeight: 700, marginLeft: 4 }}>⁕</span>
             נשלח מייל רק כשטראמפ יגיד לו שוב. לא נציק, נודרים.
           </p>
 
-          {/* טופס הסרת הרשמה — מוסתר כברירת מחדל */}
-          <div style={{ marginTop: '1.2rem', borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: '1rem' }}>
+          <div style={{
+            marginTop: '1.2rem',
+            borderTop: '1px solid rgba(14,30,54,0.08)',
+            paddingTop: '1rem',
+          }}>
             {!showUnsub ? (
-              /* לינק קטן לפתיחת טופס הסרה */
               <button
                 onClick={() => setShowUnsub(true)}
                 style={{
@@ -160,7 +159,6 @@ export default function SubscribeBox() {
                 כבר נרשמת? להסרה מעדכוני המלך
               </button>
             ) : (
-              /* טופס הסרה */
               <form
                 onSubmit={handleUnsubscribe}
                 style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}
@@ -181,15 +179,15 @@ export default function SubscribeBox() {
                     onChange={(e) => setUnsubEmail(e.target.value)}
                     required
                     autoFocus
+                    className="input-field"
                     style={{
                       flex: '1 1 210px',
                       borderRadius: 10,
                       padding: '10px 14px',
                       fontSize: 14,
-                      outline: 'none',
                       background: 'rgba(255,255,255,0.92)',
-                      border: '2px solid rgba(226,201,126,0.5)',
-                      color: '#1a0533',
+                      border: '1.5px solid rgba(14,30,54,0.18)',
+                      color: 'var(--text-main)',
                       fontFamily: 'Heebo, sans-serif',
                       fontWeight: 500,
                     }}
@@ -198,14 +196,15 @@ export default function SubscribeBox() {
                     type="submit"
                     style={{
                       background: 'transparent',
-                      border: '1px solid rgba(226,201,126,0.35)',
+                      border: '1px solid rgba(176,128,16,0.35)',
                       borderRadius: 10,
                       padding: '10px 18px',
                       fontSize: 13,
-                      color: 'var(--accent)',
+                      color: 'var(--gold)',
                       cursor: 'pointer',
                       fontFamily: 'Heebo, sans-serif',
                       fontWeight: 600,
+                      transition: 'background 0.15s ease',
                     }}
                   >
                     הסירו אותי

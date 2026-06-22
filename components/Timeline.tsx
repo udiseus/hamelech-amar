@@ -11,10 +11,9 @@ function formatDate(iso: string): string {
   })
 }
 
-/** Count Hebrew alef-bet letters vs Latin letters to determine majority script */
 function isHebrew(text: string): boolean {
   const hebrewCount = (text.match(/[א-ת]/g) || []).length
-  const latinCount  = (text.match(/[a-zA-Z]/g)        || []).length
+  const latinCount  = (text.match(/[a-zA-Z]/g) || []).length
   return hebrewCount >= latinCount
 }
 
@@ -30,58 +29,72 @@ export default function Timeline({ tweets }: Props) {
       <h2 className="font-title" style={{
         fontSize: 'clamp(20px, 4vw, 26px)',
         fontWeight: 700,
-        color: 'var(--accent)',
-        marginBottom: '1.5rem',
+        color: 'var(--text-main)',
+        marginBottom: '1.25rem',
         letterSpacing: '-0.02em',
-        borderBottom: '2px solid var(--accent)',
+        borderBottom: '2px solid var(--gold)',
         paddingBottom: '0.6rem',
       }}>
         כל הפעמים שהמלך אמר
       </h2>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         {tweets.map((tweet) => {
           const hebrew = isHebrew(tweet.text)
           return (
             <article
               key={tweet.tweet_id}
+              onMouseEnter={e => {
+                const el = e.currentTarget
+                el.style.boxShadow = '0 4px 20px rgba(14,30,54,0.11)'
+                el.style.borderColor = 'rgba(14,30,54,0.2)'
+                el.style.transform = 'translateY(-1px)'
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget
+                el.style.boxShadow = '0 1px 6px rgba(14,30,54,0.07)'
+                el.style.borderColor = 'rgba(14,30,54,0.12)'
+                el.style.transform = 'translateY(0)'
+              }}
               style={{
                 background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: 14,
-                padding: '0.85rem 1.1rem',
-                boxShadow: '0 1px 10px rgba(30,106,168,0.06)',
+                border: '1px solid rgba(14,30,54,0.12)',
+                borderRadius: 16,
+                padding: '0.9rem 1.15rem',
+                boxShadow: '0 1px 6px rgba(14,30,54,0.07)',
+                transition: 'box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease',
               }}
             >
-              {/* Header row — always RTL, badge on right only */}
-              <div dir="rtl" style={{ marginBottom: '0.55rem' }}>
+              {/* Header row */}
+              <div dir="rtl" style={{ marginBottom: '0.5rem' }}>
                 <span style={{
                   fontSize: 11,
-                  fontWeight: 700,
+                  fontWeight: 400,
                   fontFamily: 'Heebo, sans-serif',
-                  background: 'rgba(30,106,168,0.1)',
-                  color: 'var(--accent)',
+                  background: 'rgba(176,128,16,0.10)',
+                  color: 'var(--gold)',
                   padding: '2px 10px',
                   borderRadius: 999,
-                  letterSpacing: '0.04em',
+                  letterSpacing: '0.06em',
+                  border: '1px solid rgba(176,128,16,0.22)',
                 }}>
                   #{tweet.count_number}
                 </span>
               </div>
 
-              {/* Tweet text — direction by content language */}
+              {/* Tweet text */}
               <p
                 dir={hebrew ? 'rtl' : 'ltr'}
                 style={{
                   fontFamily: 'Heebo, sans-serif',
-                  fontSize: 'clamp(14px, 2.8vw, 17px)',
+                  fontSize: 'clamp(14px, 2.8vw, 16px)',
                   fontWeight: 400,
                   lineHeight: 1.65,
                   color: 'var(--text-main)',
                   textAlign: hebrew ? 'right' : 'left',
                   margin: '0 0 0.45rem 0',
-                  borderRight: hebrew ? '3px solid var(--accent-light)' : 'none',
-                  borderLeft:  hebrew ? 'none' : '3px solid var(--accent-light)',
+                  borderRight: hebrew ? '3px solid var(--gold)' : 'none',
+                  borderLeft:  hebrew ? 'none' : '3px solid var(--gold)',
                   paddingRight: hebrew ? 12 : 0,
                   paddingLeft:  hebrew ? 0  : 12,
                 }}
@@ -89,7 +102,7 @@ export default function Timeline({ tweets }: Props) {
                 {truncate(tweet.text)}
               </p>
 
-              {/* Date + link — always RTL, inline */}
+              {/* Date + link */}
               <p dir="rtl" style={{
                 fontSize: 12,
                 color: 'var(--text-muted)',
@@ -102,9 +115,9 @@ export default function Timeline({ tweets }: Props) {
                   href={tweet.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: 'var(--accent-light)', textDecoration: 'none' }}
+                  style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}
                 >
-                  לציוץ
+                  לציוץ ↗
                 </a>
               </p>
             </article>

@@ -45,7 +45,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'שגיאה בשמירת הנרשם. נסו שוב.' }, { status: 500 })
   }
 
-  await sendConfirmationEmail(normalizedEmail, token)
+  try {
+    await sendConfirmationEmail(normalizedEmail, token)
+  } catch (emailErr) {
+    console.error('[subscribe] Failed to send confirmation email:', emailErr)
+    // מחיקת הרשמה כדי שהמשתמש יוכל לנסות שוב
+    await supabaseAdmin.from('subscribers').delete().eq('email', normalizedEmail)
+    return NextResponse.json({ error: 'שגיאה בשליחת מייל אישור. נסו שוב בעוד כמה דקות.' }, { status: 500 })
+  }
 
   // שלח התראה לבעל האתר — אם נכשל, לא שוברים את ההרשמה
   try { await sendOwnerNotification(normalizedEmail) } catch (e) { console.error('[Owner notify] failed:', e) }

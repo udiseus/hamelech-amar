@@ -24,30 +24,12 @@ function getMoodColor(latestTweetDate: string | null): string {
 
 async function getData() {
   const supabase = getSupabase()
-  const [countResult, latestResult, archiveResult] = await Promise.all([
-    // Total count = max count_number
-    supabase
-      .from('matched_tweets')
-      .select('count_number')
-      .order('count_number', { ascending: false })
-      .limit(1)
-      .single(),
-    // Latest tweet = most recent by actual tweet date
-    supabase
-      .from('matched_tweets')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single(),
-    // Archive = chronological, newest first
-    supabase
-      .from('matched_tweets')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(50),
+  const [countResult, archiveResult] = await Promise.all([
+    supabase.from('matched_tweets').select('*').order('count_number', { ascending: false }).limit(1).single(),
+    supabase.from('matched_tweets').select('*').order('count_number', { ascending: false }).limit(50),
   ])
-  const totalCount = countResult.data?.count_number ?? 0
-  const latestTweet: MatchedTweet | null = latestResult.data ?? null
+  const latestTweet: MatchedTweet | null = countResult.data ?? null
+  const totalCount = latestTweet?.count_number ?? 0
   const archive: MatchedTweet[] = archiveResult.data ?? []
   return { totalCount, latestTweet, archive }
 }
@@ -100,13 +82,13 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
           background: 'linear-gradient(180deg, rgba(8,20,45,0.60) 0%, rgba(14,50,100,0.35) 35%, rgba(26,95,168,0.12) 65%, transparent 100%)',
         }} />
         {/* Sun glow */}
-        <div style={{ position:'absolute', top:'12%', right:'18%', width:'160px', height:'160px', borderRadius:'}0%', background:'radial-gradient(circle, rgba(255,220,100,0.22) 0%, transparent 70%)', zIndex:2, filter:'blur(8px)' }} />
+        <div style={{ position:'absolute', top:'12%', right:'18%', width:'160px', height:'160px', borderRadius:'50%', background:'radial-gradient(circle, rgba(255,220,100,0.22) 0%, transparent 70%)', zIndex:2, filter:'blur(8px)' }} />
 
         {/* Cloud blobs */}
-        <div className="cloud-a" style={{ position:'absolute', top:'50%', left:'-6%',  width:'46%', height:'15%', background:'white', borderRadius:'}0%', opacity:0.13, filter:'blur(22px)', zIndex:3 }} />
-        <div className="cloud-b" style={{ position:'absolute', top:'54%', right:'-4%', width:'42%', height:'13%', background:'white', borderRadius:'}0%', opacity:0.11, filter:'blur(20px)', zIndex:3 }} />
-        <div className="cloud-c" style={{ position:'absolute', top:'63%', left:'6%',   width:'36%', height:'11%', background:'white', borderRadius:'}0%', opacity:0.16, filter:'blur(16px)', zIndex:3 }} />
-        <div className="cloud-a" style={{ position:'absolute', top:'67%', right:'5%',  width:'32%', height:'10%', background:'white', borderRadius:'}0%', opacity:0.13, filter:'blur(14px)', zIndex:3 }} />
+        <div className="cloud-a" style={{ position:'absolute', top:'50%', left:'-6%',  width:'46%', height:'15%', background:'white', borderRadius:'50%', opacity:0.13, filter:'blur(22px)', zIndex:3 }} />
+        <div className="cloud-b" style={{ position:'absolute', top:'54%', right:'-4%', width:'42%', height:'13%', background:'white', borderRadius:'50%', opacity:0.11, filter:'blur(20px)', zIndex:3 }} />
+        <div className="cloud-c" style={{ position:'absolute', top:'63%', left:'6%',   width:'36%', height:'11%', background:'white', borderRadius:'50%', opacity:0.16, filter:'blur(16px)', zIndex:3 }} />
+        <div className="cloud-a" style={{ position:'absolute', top:'67%', right:'5%',  width:'32%', height:'10%', background:'white', borderRadius:'50%', opacity:0.13, filter:'blur(14px)', zIndex:3 }} />
 
         {/* Illustration — PNG with transparent background, no blend mode needed */}
         <div style={{ position: 'relative', width: '100%', zIndex: 4 }}>
@@ -141,12 +123,12 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
             className="font-title"
             style={{
               fontSize: 'clamp(14px, 2.6vw, 19px)',
-              fontWeight: 700,
-              color: 'rgba(255,255,255,0.92)',
-              textShadow: '0 2px 14px rgba(0,0,0,0.65)',
+              fontWeight: 600,
+              color: 'rgba(255,255,255,0.90)',
+              textShadow: '0 2px 14px rgba(0,0,0,0.55)',
               maxWidth: 500,
               margin: '0 auto 1.8rem',
-              lineHeight: 1.55,
+              lineHeight: 1.6,
             }}
           >
             אנחנו כאן כדי לוודא שאף &ldquo;אמר לי&rdquo; לא ילך לאיבוד בדפי ההיסטוריה.

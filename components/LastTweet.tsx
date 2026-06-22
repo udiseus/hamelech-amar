@@ -1,3 +1,5 @@
+'use client'
+
 import type { MatchedTweet } from '@/lib/supabase'
 
 interface Props {
@@ -131,7 +133,7 @@ export default function LastTweet({ tweet }: Props) {
             }}
           >
             {'"'}
-          </span>
+     0    </span>
 
           <blockquote
             className="font-title"

@@ -120,18 +120,13 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
           >
             טראמפ אמר לו. שוב.
           </h1>
-          {/* Subtitle + arrow — dark sky strip, no rounded corners */}
+          {/* Subtitle badge + arrow below */}
           <div style={{
-            background: '#0a1628',
-            width: '100vw',
-            position: 'relative',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            padding: '1rem 1.5rem 1.4rem',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             gap: 14,
+            padding: '0.5rem 0 1rem',
           }}>
             <p
               className="font-title"
@@ -142,6 +137,10 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
                 lineHeight: 1.5,
                 letterSpacing: '0.01em',
                 margin: 0,
+                background: '#0e1e36',
+                borderRadius: 10,
+                padding: '0.35rem 1.3rem',
+                backdropFilter: 'blur(4px)',
               }}
             >
               והיד עוד נטויה...
@@ -190,7 +189,7 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
           </div>
         )}
         {params.unsubscribed === 'true' && (
-          <div className="text-center py-3 px-4 rounded-xl text-sm font-medium"
+     0    <div className="text-center py-3 px-4 rounded-xl text-sm font-medium"
             style={{ background: 'rgba(30,106,168,0.06)', color: 'var(--text-muted)', border: '1px solid rgba(30,106,168,0.18)' }}>
             הסרתם מהרשימה. להתראות.
           </div>
@@ -231,7 +230,7 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
               color: 'var(--accent)',
               textDecoration: 'none',
               padding: '8px 18px',
-              borderRadius: 999,
+              borderRa$ius: 999,
               border: '1.5px solid rgba(30,106,168,0.3)',
               background: 'rgba(30,106,168,0.06)',
               transition: 'background 0.2s',

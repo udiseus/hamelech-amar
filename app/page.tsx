@@ -103,7 +103,8 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
         <header className="text-center" style={{
           position: 'relative', zIndex: 6,
           marginTop: 0,
-          padding: '0 1.5rem 2rem',
+          padding: '0 1.5rem 0',
+          width: '100%',
         }}>
           <h1
             className="font-title"
@@ -119,47 +120,53 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
           >
             טראמפ אמר לו. שוב.
           </h1>
-          <p
-            className="font-title"
-            style={{
-              fontSize: 'clamp(16px, 3.2vw, 26px)',
-              fontWeight: 400,
-              color: 'rgba(255,255,255,0.92)',
-              margin: '0 auto 1.8rem',
-              lineHeight: 1.5,
-              letterSpacing: '0.01em',
-              display: 'inline-block',
-              background: 'rgba(14,30,54,0.80)',
-              border: '1px solid rgba(255,255,255,0.18)',
-              borderRadius: 10,
-              padding: '6px 22px',
-              backdropFilter: 'blur(6px)',
-            }}
-          >
-            והיד עוד נטויה.
-          </p>
-
-          {/* Down arrow → smooth scroll to content */}
-          <a
-            href="#content"
-            aria-label="גלול למטה"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 44,
-              height: 44,
-              borderRadius: '50%',
-              border: '1.5px solid rgba(255,255,255,0.45)',
-              color: 'rgba(255,255,255,0.8)',
-              textDecoration: 'none',
-              animation: 'bounce-down 1.8s ease-in-out infinite',
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="4 8 10 14 16 8" />
-            </svg>
-          </a>
+          {/* Subtitle + arrow — dark sky strip, no rounded corners */}
+          <div style={{
+            background: '#0a1628',
+            width: '100vw',
+            position: 'relative',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            padding: '1rem 1.5rem 1.4rem',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 14,
+          }}>
+            <p
+              className="font-title"
+              style={{
+                fontSize: 'clamp(16px, 3.2vw, 26px)',
+                fontWeight: 400,
+                color: 'rgba(255,255,255,0.88)',
+                lineHeight: 1.5,
+                letterSpacing: '0.01em',
+                margin: 0,
+              }}
+            >
+              והיד עוד נטויה...
+            </p>
+            <a
+              href="#content"
+              aria-label="גלול למטה"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 44,
+                height: 44,
+                borderRadius: '50%',
+                border: '1.5px solid rgba(255,255,255,0.35)',
+                color: 'rgba(255,255,255,0.7)',
+                textDecoration: 'none',
+                animation: 'bounce-down 1.8s ease-in-out infinite',
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="4 8 10 14 16 8" />
+              </svg>
+            </a>
+          </div>
         </header>
       </div>
 

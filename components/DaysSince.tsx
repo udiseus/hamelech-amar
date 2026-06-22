@@ -42,18 +42,20 @@ export default function DaysSince({ latestTweetDate, totalCount }: Props) {
   const { days, label } = calcDaysSince(latestTweetDate)
   const { color, mood } = getMood(days)
 
-  const latestDate = new Date(latestTweetDate).toLocaleDateString('he-IL', {
-    day: 'numeric', month: 'long', year: 'numeric',
-    timeZone: 'Asia/Jerusalem',
-  })
-
   return (
     <section className="card fade-in-up text-center" style={{ animationDelay: '0.15s' }}>
-      <p style={{ fontFamily: 'Heebo, sans-serif', fontWeight: 400, fontSize: 'clamp(15px, 3vw, 18px)', color: 'var(--text-muted)', marginBottom: '0.1rem' }}>
+      <p style={{
+        fontFamily: 'Heebo, sans-serif',
+        fontWeight: 400,
+        fontSize: 'clamp(15px, 3vw, 17px)',
+        color: 'var(--text-muted)',
+        letterSpacing: '0.01em',
+        marginBottom: '0.1rem',
+      }}>
         כמה זמן עבר מאז שהמלך דיבר עם ברק?
       </p>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem', marginBottom: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem', marginBottom: 0 }}>
         <span
           className="font-title"
           style={{
@@ -61,27 +63,40 @@ export default function DaysSince({ latestTweetDate, totalCount }: Props) {
             fontWeight: 900,
             color,
             lineHeight: 1,
-            textShadow: `0 0 30px ${color}44`,
+            textShadow: `0 0 30px ${color}33`,
           }}
         >
           {days}
         </span>
-        <div style={{ lineHeight: 1.15, textAlign: 'right' }}>
-          <p style={{ fontFamily: 'Heebo, sans-serif', fontWeight: 700, fontSize: 20, color: 'var(--text-main)', margin: 0 }}>
+        <div style={{ lineHeight: 1.2, textAlign: 'right' }}>
+          <p style={{ fontFamily: 'Heebo, sans-serif', fontWeight: 600, fontSize: 19, color: 'var(--text-main)', margin: 0 }}>
             {days === 1 ? 'יום' : 'ימים'}
           </p>
-          <p style={{ fontFamily: 'Heebo, sans-serif', fontWeight: 300, fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>
+          <p style={{ fontFamily: 'Heebo, sans-serif', fontWeight: 300, fontSize: 11, color: 'var(--text-muted)', margin: 0, letterSpacing: '0.03em' }}>
             {days === 0 ? 'כבר דיבר היום' : 'ללא ציוץ חדש'}
           </p>
         </div>
       </div>
 
-      <p className="text-base font-semibold mb-1" style={{ color, fontFamily: 'Heebo, sans-serif' }}>
+      <p className="font-title" style={{
+        fontSize: 'clamp(16px, 3vw, 20px)',
+        fontWeight: 700,
+        color,
+        fontFamily: 'Heebo, sans-serif',
+        marginTop: '0.3rem',
+        marginBottom: days >= 7 ? '0.2rem' : 0,
+      }}>
         {mood}
       </p>
 
       {days >= 7 && (
-        <p className="text-xs mt-2 italic" style={{ color: 'var(--text-muted)', fontFamily: 'Heebo, sans-serif' }}>
+        <p style={{
+          fontSize: 13,
+          fontStyle: 'italic',
+          color: 'var(--text-muted)',
+          fontFamily: 'Heebo, sans-serif',
+          marginTop: '0.4rem',
+        }}>
           {days >= 30 ? 'האם טראמפ חדל לדבר איתו? האם ברק נרדם?' : 'ברק, אנחנו מחכים...'}
         </p>
       )}

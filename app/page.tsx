@@ -189,7 +189,7 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
           </div>
         )}
         {params.unsubscribed === 'true' && (
-     0    <div className="text-center py-3 px-4 rounded-xl text-sm font-medium"
+          <div className="text-center py-3 px-4 rounded-xl text-sm font-medium"
             style={{ background: 'rgba(30,106,168,0.06)', color: 'var(--text-muted)', border: '1px solid rgba(30,106,168,0.18)' }}>
             הסרתם מהרשימה. להתראות.
           </div>
@@ -230,7 +230,7 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
               color: 'var(--accent)',
               textDecoration: 'none',
               padding: '8px 18px',
-              borderRa$ius: 999,
+              borderRadius: 999,
               border: '1.5px solid rgba(30,106,168,0.3)',
               background: 'rgba(30,106,168,0.06)',
               transition: 'background 0.2s',

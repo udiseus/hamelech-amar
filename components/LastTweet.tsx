@@ -10,12 +10,12 @@ function timeAgo(iso: string): string {
   const diffMs = now.getTime() - new Date(iso).getTime()
   const diffMins = Math.floor(diffMs / 60000)
   const diffHrs = Math.floor(diffMins / 60)
-  if (diffMins < 1)  return 'לפני החות ורדקה'
+  if (diffMins < 1)  return 'לפני פחות מדקה'
   if (diffMins < 60) return `לפני ${diffMins} דקות`
-  if (diffHrs < 24)  return `לפני ${diffHrs} שעות�
+  if (diffHrs < 24)  return `לפני ${diffHrs} שעות`
   const toMidnight = (s: string) => { const [d,m,y] = s.split('.').map(Number); return new Date(y,m-1,d).getTime() }
   const diffDays = Math.round((toMidnight(now.toLocaleDateString('he-IL',{timeZone:tz})) - toMidnight(new Date(iso).toLocaleDateString('he-IL',{timeZone:tz}))) / 86400000)
-  if (diffDays === 1) return 'את�מוח'
+  if (diffDays === 1) return 'אתמול'
   if (diffDays < 30)  return `לפני ${diffDays} ימים`
   return `לפני ${Math.floor(diffDays / 30)} חודשים`
 }
@@ -67,7 +67,7 @@ export default function LastTweet({ tweet }: Props) {
             fontWeight: 300,
             marginTop: 2,
           }}>
-           {timeAgo(tweet.created_at)} · {formatDate(tweet.created_at)}
+            {timeAgo(tweet.created_at)} · {formatDate(tweet.created_at)}
           </p>
         </div>
 
@@ -130,7 +130,7 @@ export default function LastTweet({ tweet }: Props) {
               whiteSpace: 'nowrap',
             }}
           >
-            {'"}'}
+            {'"'}
           </span>
 
           <blockquote

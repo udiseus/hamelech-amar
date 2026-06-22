@@ -48,7 +48,7 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
 
       {/* ══════════════════════════════════════
           HERO — sky video + illustration
-      ══════════════════════════════════════ */}
+     .══════════════════════════════════════ */}
       <div
         className="fade-in-up hero-section"
         style={{
@@ -132,7 +132,7 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
               letterSpacing: '0.01em',
             }}
           >
-            כי מישהו צריך לספור.
+            והיד עוד נטויה.
           </p>
 
           {/* Down arrow → smooth scroll to content */}

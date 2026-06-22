@@ -137,10 +137,10 @@ const moodColor = getMoodColor(latestTweet?.created_at ?? null)
                 lineHeight: 1.5,
                 letterSpacing: '0.01em',
                 margin: 0,
-                background: '#0e1e36',
-                borderRadius: 10,
+                background: 'rgba(26, 95, 168, 0.72)',
+                borderRadius: 0,
                 padding: '0.35rem 1.3rem',
-                backdropFilter: 'blur(4px)',
+                backdropFilter: 'blur(6px)',
               }}
             >
               והיד עוד נטויה...

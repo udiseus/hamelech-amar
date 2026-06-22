@@ -1,3 +1,5 @@
+'use client'
+
 import type { MatchedTweet } from '@/lib/supabase'
 
 interface Props {

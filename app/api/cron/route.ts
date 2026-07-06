@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { fetchNewTweets } from '@/lib/rss'
-import { sendNewTweetNotification } from '@/lib/email'
+import { sendNewTweetNotification, sendRssFailureAlert } from '@/lib/email'
 
 export async function GET(req: NextRequest) {
+  // אם CRON_SECRET מוגדר — מאמתים את הבקשה; אם לא — פותחים לכולם (למצב פיתוח)
   const cronSecret = process.env.CRON_SECRET
   if (cronSecret) {
     const authHeader = req.headers.get('authorization')
@@ -15,13 +16,38 @@ export async function GET(req: NextRequest) {
   const supabaseAdmin = getSupabaseAdmin()
 
   try {
-    const candidates = await fetchNewTweets()
+    const { data: latestSaved } = await supabaseAdmin
+      .from('matched_tweets')
+      .select('tweet_id, count_number')
+      .order('count_number', { ascending: false })
+      .limit(1)
+      .single()
 
-    if (candidates.length === 0) {
-      return NextResponse.json({ message: 'No matched tweets in feed', checked_at: new Date().toISOString() })
+    let currentCount = latestSaved?.count_number ?? 0
+
+    const { tweets: candidates, allSourcesFailed, successSource } = await fetchNewTweets()
+
+    if (allSourcesFailed) {
+      console.error('[cron] All RSS sources failed — sending owner alert')
+      try {
+        await sendRssFailureAlert()
+      } catch (alertErr) {
+        console.error('[cron] Failed to send RSS alert email:', alertErr)
+      }
+      return NextResponse.json({
+        warning: 'All RSS sources failed — owner alert sent',
+        checked_at: new Date().toISOString(),
+      })
     }
 
-    // Sort chronologically before inserting
+    if (candidates.length === 0) {
+      return NextResponse.json({
+        message: 'No matched tweets in feed',
+        source: successSource,
+        checked_at: new Date().toISOString(),
+      })
+    }
+
     candidates.sort(
       (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     )
@@ -37,14 +63,14 @@ export async function GET(req: NextRequest) {
 
       if (existing) continue
 
-      // Insert with placeholder count_number=0 — will be fixed by reassignment below
+      currentCount += 1
       const { error } = await supabaseAdmin.from('matched_tweets').insert({
         tweet_id: tweet.tweet_id,
         text: tweet.text,
         created_at: tweet.created_at,
         url: tweet.url,
         matched_phrase: tweet.matched_phrase,
-        count_number: 0,
+        count_number: currentCount,
         detected_at: new Date().toISOString(),
       })
 
@@ -55,26 +81,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: 'All tweets already in DB' })
     }
 
-    // Reassign ALL count_numbers chronologically
-    const { data: allTweets } = await supabaseAdmin
-      .from('matched_tweets')
-      .select('id, created_at')
-      .order('created_at', { ascending: true })
-
-    if (allTweets) {
-      await Promise.all(
-        allTweets.map((t, i) =>
-          supabaseAdmin
-            .from('matched_tweets')
-            .update({ count_number: i + 1 })
-            .eq('id', t.id)
-        )
-      )
-    }
-
-    const newTotal = allTweets?.length ?? 0
-
-    // Notify subscribers
     const { data: confirmedSubscribers } = await supabaseAdmin
       .from('subscribers')
       .select('email')
@@ -84,22 +90,21 @@ export async function GET(req: NextRequest) {
     const emails = confirmedSubscribers?.map((s) => s.email) ?? []
 
     if (emails.length > 0) {
-      // Send notification for the most recent tweet by actual date
-      const { data: latestByDate } = await supabaseAdmin
+      const { data: latestInserted } = await supabaseAdmin
         .from('matched_tweets')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('count_number', { ascending: false })
         .limit(1)
         .single()
 
-      if (latestByDate) {
-        await sendNewTweetNotification(emails, latestByDate, latestByDate.count_number)
+      if (latestInserted) {
+        await sendNewTweetNotification(emails, latestInserted, latestInserted.count_number)
       }
     }
 
     return NextResponse.json({
       inserted: inserted.length,
-      new_total: newTotal,
+      new_count: currentCount,
       notified: emails.length,
     })
   } catch (err) {

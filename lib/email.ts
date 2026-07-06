@@ -31,7 +31,7 @@ function getResendFrom() {
 }
 
 function getGmailFrom() {
-  // RFC 2047 Base64 encoding — חובה לשמות תצוגה בעברית כדי שיוצגו נכון בכל לקוח מייל
+  // RFC 2047 Base64 encoding — חובה לשמות תצוגה בעברית כדי שיוצגו נכון בכל לקוח מיי 
   const b64 = Buffer.from('המלך אמר').toString('base64')
   return `=?UTF-8?B?${b64}?= <${process.env.GMAIL_USER}>`
 }
@@ -44,7 +44,7 @@ async function sendEmail(to: string, subject: string, html: string) {
       to,
       subject,
       html,
-      encoding: 'base64', // מבטיח קידוד נכון של עברית ואמוג׳י בכל לקוחות המייל
+      encoding: 'base64', // מבטיח קידוד נכון של עערית ואמוג׳י בכל לקוחות המייל
     })
     console.log('[Gmail] Sent OK, messageId:', info.messageId)
   } else {
@@ -91,6 +91,28 @@ export async function sendConfirmationEmail(email: string, token: string) {
 }
 
 // שולח התראה לבעל האתר כשנרשם מנוי חדש — נפרד לחלוטין מזרימת ההרשמה הרגילה
+export async function sendRssFailureAlert() {
+  const ownerEmail = process.env.GMAIL_USER ?? 'udi.jonas@gmail.com'
+  const now = new Date().toLocaleString('he-IL', { timeZone: 'Asia/Jerusalem' })
+  await sendEmail(
+    ownerEmail,
+    '⚠️ המלך אמר — כל מקורות ה-RSS נכשלו',
+    `<meta charset="utf-8">
+     <div dir="rtl" style="font-family: Arial, sans-serif; padding: 24px; background: #1a0533; color: #e2c97e; border-radius: 8px; max-width: 600px;">
+       <h2 style="color: #ff6b6b; margin-top: 0;">⚠️ כשל ב-RSS Scanner</h2>
+       <p style="font-size: 16px;">הסריקה היומית רצה אך <strong>כל מקורות ה-RSS נכשלו</strong>.</p>
+       <p style="font-size: 13px; color: #c4b5fd;">זמן הסריקה: ${now}</p>
+       <p style="font-size: 15px;">ייתכן שציוצים חדשים של ברק רביד לא נקלטו היום.</p>
+       <p style="font-size: 14px;">
+         בדוק ידנית: <a href="https://x.com/BarakRavid" style="color: #9b7fd4;">@BarakRavid ב-X</a>
+       </p>
+       <p style="font-size: 14px;">
+         אבחון מקורות: <a href="https://hamelech-amar.vercel.app/api/debug-rss" style="color: #9b7fd4;">api/debug-rss</a>
+       </p>
+     </div>`
+  )
+}
+
 export async function sendOwnerNotification(subscriberEmail: string) {
   const ownerEmail = process.env.GMAIL_USER ?? 'udi.jonas@gmail.com'
   await sendEmail(
@@ -134,12 +156,12 @@ export async function sendNewTweetNotification(
         </a>
       </div>
       <p style="font-size: 12px; color: #6b21a8; text-align: center; margin-top: 40px;">
-        לא רוצ.ים יותר עדכונים? <a href="${appUrl}/api/unsubscribe?email=${encodeURIComponent(email)}" style="color: #9b7fd4;">הסרת הרשמה</a>
+        לא רוצ.ים יותר ערדכוניח? <a href="${appUrl}/api/unsubscribe?email=${encodeURIComponent(email)}" style="color: #9b7fd4;">הסרת הרשמה</a>
       </p>
     </div>
   `
 
-  const subject = `המלך אמר שוב — קאונטר: ${totalCount}`
+  const subject = `המלך אמר שוױ— חדקאונטר: ${totalCount}`
 
   if (useGmail()) {
     const transporter = getGmailTransporter()

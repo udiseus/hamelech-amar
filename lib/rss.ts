@@ -89,19 +89,18 @@ async function fetchFromUrl(feedUrl: string): Promise<RawTweet[]> {
   const results: RawTweet[] = []
 
   for (const item of feed.items) {
-    // Try all possible text fields — different RSS sources use different fields
-    const text = [
-      item.contentSnippet,
-      item.content,
-      item.title,
-      item['media:description'],
-    ].filter(Boolean).join(' ')
+    const title = item.title ?? ''
+
+    // Skip retweets
+    if (title.startsWith('RT by @') || title.startsWith('RT @')) continue
 
     const link = item.link ?? ''
     const pubDate = item.pubDate ?? new Date().toISOString()
 
+    // Match only on title — not description/contentSnippet which contain quoted tweet text
+    // and cause false positives
     const matchedPhrase = SEARCH_PHRASES.find((p) =>
-      text.toLowerCase().includes(p.toLowerCase())
+      title.toLowerCase().includes(p.toLowerCase())
     )
     if (!matchedPhrase) continue
 
@@ -110,7 +109,7 @@ async function fetchFromUrl(feedUrl: string): Promise<RawTweet[]> {
 
     results.push({
       tweet_id: tweetId,
-      text,
+      text: title,
       created_at: new Date(pubDate).toISOString(),
       url: `https://x.com/BarakRavid/status/${tweetId}`,
       matched_phrase: matchedPhrase,

@@ -31,7 +31,7 @@ function getResendFrom() {
 }
 
 function getGmailFrom() {
-  // RFC 2047 Base64 encoding — חובה לשמות תצוגה בעברית כדי שיוצגו נכון בכל לקוח מיי 
+  // RFC 2047 Base64 encoding — חובה לשמות תצוגה בעברית כדי שיוצגו נכון בכל לקוח מייל
   const b64 = Buffer.from('המלך אמר').toString('base64')
   return `=?UTF-8?B?${b64}?= <${process.env.GMAIL_USER}>`
 }
@@ -44,7 +44,7 @@ async function sendEmail(to: string, subject: string, html: string) {
       to,
       subject,
       html,
-      encoding: 'base64', // מבטיח קידוד נכון של עערית ואמוג׳י בכל לקוחות המייל
+      encoding: 'base64', // מבטיח קידוד נכון של עברית ואמוג׳י בכל לקוחות המייל
     })
     console.log('[Gmail] Sent OK, messageId:', info.messageId)
   } else {
@@ -156,14 +156,17 @@ export async function sendNewTweetNotification(
         </a>
       </div>
       <p style="font-size: 12px; color: #6b21a8; text-align: center; margin-top: 40px;">
-        לא רוצ.ים יותר ערדכוניח? <a href="${appUrl}/api/unsubscribe?email=${encodeURIComponent(email)}" style="color: #9b7fd4;">הסרת הרשמה</a>
+        לא רוצ.ים יותר עדכונים? <a href="${appUrl}/api/unsubscribe?email=${encodeURIComponent(email)}" style="color: #9b7fd4;">הסרת הרשמה</a>
       </p>
     </div>
   `
 
-  const subject = `המלך אמר שוױ— חדקאונטר: ${totalCount}`
+  // ניסוח נכון: "בפעם ה-N" במקום "קאונטר: N"
+  const subjectRaw = `המלך אמר שוב — בפעם ה-${totalCount}`
 
   if (useGmail()) {
+    // RFC 2047 Base64 — מניעת שיבוש תווים עברית+em-dash שנגרם כש-nodemailer מפצל כותרות ארוכות
+    const subject = `=?UTF-8?B?${Buffer.from(subjectRaw, 'utf8').toString('base64')}?=`
     const transporter = getGmailTransporter()
     const from = getGmailFrom()
     const BATCH_SIZE = 20
@@ -172,7 +175,7 @@ export async function sendNewTweetNotification(
       await Promise.all(
         batch.map(async (email) => {
           try {
-            const info = await transporter.sendMail({ from, to: email, subject, html: makeHtml(email) })
+            const info = await transporter.sendMail({ from, to: email, subject, html: makeHtml(email), encoding: 'base64' })
             console.log(`[Gmail] Sent to ${email}, messageId: ${info.messageId}`)
           } catch (err) {
             console.error(`[Gmail] Error sending to ${email}:`, err)
@@ -188,7 +191,7 @@ export async function sendNewTweetNotification(
       const batch = emails.slice(i, i + BATCH_SIZE)
       await Promise.all(
         batch.map(async (email) => {
-          const { data, error } = await resend.emails.send({ from, to: email, subject, html: makeHtml(email) })
+          const { data, error } = await resend.emails.send({ from, to: email, subject: subjectRaw, html: makeHtml(email) })
           if (error) {
             console.error(`[Resend] Error sending to ${email}:`, JSON.stringify(error))
           } else {

@@ -32,16 +32,11 @@ export const SEARCH_PHRASES = [
   'In an interview with me',
   'Speaking to me',
   'In comments to me',
-  // Reporting verbs
+  // Reporting verbs — only direct contact with Ravid
   'Trump confirmed to me',
-  'Trump revealed',
-  'Trump acknowledged',
-  'Trump claimed',
   'I asked Trump',
-  'According to Trump',
   // Scoop prefixes (these appear at start of tweet)
   'SCOOP: Trump told me',
-  'NEW: Trump says',
   'Axios scoop: Trump told me',
   // Core Hebrew
   'טראמפ אמר לי',

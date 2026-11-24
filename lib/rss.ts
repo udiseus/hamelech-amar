@@ -129,3 +129,31 @@ export async function fetchNewTweets(): Promise<FetchResult> {
   console.error('[rss] ALL sources failed:', errors.join(' | '))
   return { tweets: [], allSourcesFailed: true }
 }
+// Debug helper — tests all sources and returns status of each.
+// Used by /api/debug-rss
+export async function debugAllSources(): Promise<{
+  url: string
+  ok: boolean
+  itemCount?: number
+  matchCount?: number
+  error?: string
+  firstItem?: string
+}[]> {
+  return Promise.all(
+    RSS_SOURCES.map(async (url) => {
+      try {
+        const parser = new Parser({ timeout: 10000 })
+        const feed = await parser.parseURL(url)
+        const itemCount = feed.items?.length ?? 0
+        const matchCount = (feed.items ?? []).filter((item) => {
+          const text = [item.contentSnippet, item.content, item.title].filter(Boolean).join(' ')
+          return SEARCH_PHRASES.some((p) => text.toLowerCase().includes(p.toLowerCase()))
+        }).length
+        const firstItem = feed.items?.[0]?.title?.slice(0, 80) ?? ''
+        return { url, ok: true, itemCount, matchCount, firstItem }
+      } catch (err) {
+        return { url, ok: false, error: (err as Error).message }
+      }
+    })
+  )
+}
